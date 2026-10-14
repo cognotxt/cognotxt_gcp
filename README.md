@@ -223,7 +223,7 @@ Você pode:
 Depois entre na pasta:
 
 ```bash
-cd cognotxt_cloud
+cd cognotxt_gcp
 ```
 
 ---
@@ -244,7 +244,7 @@ Preencha:
 ```bash
 PROJECT_ID=meu-projeto-google
 REGION=us-central1
-BUCKET_NAME=meu-projeto-google-cognotxt
+BUCKET_NAME=meu-projeto-google-cliente-cognotxt
 FRONTEND_ORIGIN=https://cognotxt.com.br
 FRONTEND_ORIGIN_WWW=https://www.cognotxt.com.br
 DOCUMENT_AI_LOCATION=us
@@ -266,13 +266,13 @@ Ctrl+X
 O nome do bucket precisa ser globalmente único. Se:
 
 ```text
-meu-projeto-google-cognotxt
+meu-projeto-google-cliente-cognotxt
 ```
 
 já existir, use algo mais específico, por exemplo:
 
 ```text
-cognotxt-meu-projeto-2026
+cognotxt-meu-projeto-cliente-2026
 ```
 
 ---
@@ -311,6 +311,1068 @@ O script fará:
 9. Cloud Run Dispatcher;
 10. Cloud Run API;
 11. Eventarc para `OBJECT_FINALIZE`.
+
+
+================= EXECUÇÃO  =============================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh 
+
+== Projeto ==
+Updated property [core/project].
+Updated property [run/region].
+
+== APIs ==
+Operation "operations/acf.p2-940153605624-84e9657a-0f5e-4dac-b7a2-530f63d36640" finished successfully.
+
+== Service Accounts ==
+Created service account [cognotxt-api].
+Service account email: cognotxt-api@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-dispatcher].
+Service account email: cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-worker].
+Service account email: cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-eventarc].
+Service account email: cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+
+== IAM de projeto ==
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh 
+
+== Projeto ==
+Updated property [core/project].
+Updated property [run/region].
+
+== APIs ==
+Operation "operations/acf.p2-940153605624-84e9657a-0f5e-4dac-b7a2-530f63d36640" finished successfully.
+
+== Service Accounts ==
+Created service account [cognotxt-api].
+Service account email: cognotxt-api@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-dispatcher].
+Service account email: cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-worker].
+Service account email: cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+Created service account [cognotxt-eventarc].
+Service account email: cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+
+== IAM de projeto ==
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mSV9Is=
+version: 1
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mS3-BM=
+version: 1
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mTZQKM=
+version: 1
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mT-Eyw=
+version: 1
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mUdxKU=
+version: 1
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+  role: roles/eventarc.eventReceiver
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0mU9fRg=
+version: 1
+Updated IAM policy for serviceAccount [cognotxt-api@grafemapdf.iam.gserviceaccount.com].
+bindings:
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+etag: BwZd0mVYNTs=
+version: 1
+
+== Bucket ==
+Creating gs://grafemapdf-anater-cognotxt/...
+Updating gs://grafemapdf-anater-cognotxt/...                                                                                                                                                                                                                   
+  Completed 1                                                                                                                                                                                                                                                  
+bindings:
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyObjectReader
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectCreator
+etag: CAM=
+kind: storage#policy
+resourceId: projects/_/buckets/grafemapdf-anater-cognotxt
+version: 1
+bindings:
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyObjectReader
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectCreator
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectViewer
+etag: CAQ=
+kind: storage#policy
+resourceId: projects/_/buckets/grafemapdf-anater-cognotxt
+version: 1
+bindings:
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyObjectReader
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectCreator
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectViewer
+etag: CAU=
+kind: storage#policy
+resourceId: projects/_/buckets/grafemapdf-anater-cognotxt
+version: 1
+bindings:
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyBucketOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyBucketReader
+- members:
+  - projectEditor:grafemapdf
+  - projectOwner:grafemapdf
+  role: roles/storage.legacyObjectOwner
+- members:
+  - projectViewer:grafemapdf
+  role: roles/storage.legacyObjectReader
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectCreator
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectViewer
+etag: CAY=
+kind: storage#policy
+resourceId: projects/_/buckets/grafemapdf-anater-cognotxt
+version: 1
+
+== Artifact Registry ==
+Create request issued for: [cognotxt]
+Waiting for operation [projects/grafemapdf/locations/us-central1/operations/403cc485-719f-4ea0-a4bf-fc6cb20a5023] to complete...done.                                                                                                                          
+Created repository [cognotxt].
+
+== Build das imagens ==
+Creating temporary archive of 3 file(s) totalling 6.1 KiB before compression.
+Uploading tarball of [/home/arquitetura_joel/cognotxt_gcp/api] to [gs://grafemapdf_cloudbuild/source/1792008117.581934-78affb59c2e447ff887c08847ec6a7df.tgz]
+ERROR: (gcloud.builds.submit) PERMISSION_DENIED: The caller does not have permission. This command is authenticated as arquitetura.joel@gmail.com which is the active account specified by the [core/account] property
+
+
+=================================SOLUÇÃO ========================================================================
+
+
+O erro está no usuário ativo:
+arquitetura.joel@gmail.com
+
+Ele conseguiu criar o Artifact Registry, mas não tem permissão para executar builds no Cloud Build.
+A correção mínima é dar a esse usuário o papel:
+Cloud Build Editor
+roles/cloudbuild.builds.editor
+
+Esse papel contém cloudbuild.builds.create, que é a permissão exigida pelo gcloud builds submit. Google Cloud Documentation
+No Cloud Shell, execute com uma conta que tenha permissão de administrar IAM no projeto:
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="user:arquitetura.joel@gmail.com" \
+  --role="roles/cloudbuild.builds.editor"
+
+Depois confirme:
+gcloud projects get-iam-policy grafemapdf \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:user:arquitetura.joel@gmail.com" \
+  --format="table(bindings.role)"
+
+Você deve ver algo contendo:
+roles/cloudbuild.builds.editor
+
+
+============================EXECUTADO=======================================================================================
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud projects add-iam-policy-binding grafemapdf \
+  --member="user:arquitetura.joel@gmail.com" \
+  --role="roles/cloudbuild.builds.editor"
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/cloudbuild.builds.editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+  role: roles/eventarc.eventReceiver
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0nmq1cM=
+version: 1
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud projects add-iam-policy-binding grafemapdf \
+  --member="user:arquitetura.joel@gmail.com" \
+  --role="roles/cloudbuild.builds.editor"
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/cloudbuild.builds.editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+  role: roles/eventarc.eventReceiver
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0oTBbVA=
+version: 1
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+==================================================================================================
+
+
+
+ 
+Depois teste somente o build da API, antes de executar o script inteiro:
+cd ~/cognotxt_gcp
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud builds submit ./api \
+  --tag us-central1-docker.pkg.dev/grafemapdf/cognotxt/api:latest \
+  --project grafemapdf
+
+
+
+=================== ERRO DE EXECUÇÃO ======================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$  gcloud builds submit ./api \
+  --tag us-central1-docker.pkg.dev/grafemapdf/cognotxt/api:latest \
+  --project grafemapdf
+Creating temporary archive of 3 file(s) totalling 6.1 KiB before compression.
+Uploading tarball of [./api] to [gs://grafemapdf_cloudbuild/source/1792008677.760632-4a294b60c210425facac69ed9ee1bcf9.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/grafemapdf/locations/global/builds/ae37bb5b-807b-431f-ba9e-976839901ba2].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/ae37bb5b-807b-431f-ba9e-976839901ba2?project=940153605624 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+--------------------------------------------------------------------------------------------------------------------- REMOTE BUILD OUTPUT ----------------------------------------------------------------------------------------------------------------------
+starting build "ae37bb5b-807b-431f-ba9e-976839901ba2"
+
+FETCHSOURCE
+Fetching storage object: gs://grafemapdf_cloudbuild/source/1792008677.760632-4a294b60c210425facac69ed9ee1bcf9.tgz#1792008678011088
+Copying gs://grafemapdf_cloudbuild/source/1792008677.760632-4a294b60c210425facac69ed9ee1bcf9.tgz#1792008678011088...
+/ [1 files][  2.8 KiB/  2.8 KiB]                                                
+Operation completed over 1 objects/2.8 KiB.
+BUILD
+Already have image (with digest): gcr.io/cloud-builders/gcb-internal
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  9.728kB
+Step 1/7 : FROM python:3.12-slim
+3.12-slim: Pulling from library/python
+ecc510c1e359: Pulling fs layer
+75b6a36c64a1: Pulling fs layer
+6912e23eb445: Pulling fs layer
+bbc5a1223747: Pulling fs layer
+bbc5a1223747: Verifying Checksum
+bbc5a1223747: Download complete
+75b6a36c64a1: Verifying Checksum
+75b6a36c64a1: Download complete
+6912e23eb445: Verifying Checksum
+6912e23eb445: Download complete
+ecc510c1e359: Verifying Checksum
+ecc510c1e359: Download complete
+ecc510c1e359: Pull complete
+75b6a36c64a1: Pull complete
+6912e23eb445: Pull complete
+bbc5a1223747: Pull complete
+Digest: sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+Status: Downloaded newer image for python:3.12-slim
+ df18428df8a0
+Step 2/7 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ Running in 0092dbafa526
+Removing intermediate container 0092dbafa526
+ 41d8ec60307d
+Step 3/7 : WORKDIR /app
+ Running in f994b422ec26
+Removing intermediate container f994b422ec26
+ ae8bbca9df23
+Step 4/7 : COPY requirements.txt .
+ 29352f87732e
+Step 5/7 : RUN pip install --no-cache-dir -r requirements.txt
+ Running in 4a52ff30035c
+Collecting fastapi==0.115.12 (from -r requirements.txt (line 1))
+  Downloading fastapi-0.115.12-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn==0.34.2 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading uvicorn-0.34.2-py3-none-any.whl.metadata (6.5 kB)
+Collecting gunicorn==23.0.0 (from -r requirements.txt (line 3))
+  Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting google-cloud-storage==3.1.0 (from -r requirements.txt (line 4))
+  Downloading google_cloud_storage-3.1.0-py2.py3-none-any.whl.metadata (12 kB)
+Collecting google-cloud-firestore==2.20.2 (from -r requirements.txt (line 5))
+  Downloading google_cloud_firestore-2.20.2-py3-none-any.whl.metadata (9.9 kB)
+Collecting google-auth==2.40.3 (from -r requirements.txt (line 6))
+  Downloading google_auth-2.40.3-py2.py3-none-any.whl.metadata (6.2 kB)
+Collecting firebase-admin==7.0.0 (from -r requirements.txt (line 7))
+  Downloading firebase_admin-7.0.0-py3-none-any.whl.metadata (1.7 kB)
+Collecting pydantic==2.11.7 (from -r requirements.txt (line 8))
+  Downloading pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+Collecting starlette<0.47.0,>=0.40.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading starlette-0.46.2-py3-none-any.whl.metadata (6.2 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting click>=7.0 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting packaging (from gunicorn==23.0.0->-r requirements.txt (line 3))
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting google-api-core<3.0.0dev,>=2.15.0 (from google-cloud-storage==3.1.0->-r requirements.txt (line 4))
+  Downloading google_api_core-2.42.0-py3-none-any.whl.metadata (3.2 kB)
+Collecting google-cloud-core<3.0dev,>=2.4.2 (from google-cloud-storage==3.1.0->-r requirements.txt (line 4))
+  Downloading google_cloud_core-2.8.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting google-resumable-media>=2.7.2 (from google-cloud-storage==3.1.0->-r requirements.txt (line 4))
+  Downloading google_resumable_media-2.11.0-py3-none-any.whl.metadata (2.3 kB)
+Collecting requests<3.0.0dev,>=2.18.0 (from google-cloud-storage==3.1.0->-r requirements.txt (line 4))
+  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting google-crc32c<2.0dev,>=1.0 (from google-cloud-storage==3.1.0->-r requirements.txt (line 4))
+  Downloading google_crc32c-1.9.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.2 kB)
+Collecting proto-plus<2.0.0,>=1.22.0 (from google-cloud-firestore==2.20.2->-r requirements.txt (line 5))
+  Downloading proto_plus-1.29.0-py3-none-any.whl.metadata (2.2 kB)
+Collecting protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<7.0.0dev,>=3.20.2 (from google-cloud-firestore==2.20.2->-r requirements.txt (line 5))
+  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+Collecting cachetools<6.0,>=2.0.0 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading cachetools-5.5.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting pyasn1-modules>=0.2.1 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting rsa<5,>=3.1.4 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading rsa-4.9.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting cachecontrol>=0.14.3 (from firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading cachecontrol-0.14.4-py3-none-any.whl.metadata (3.1 kB)
+INFO: pip is looking at multiple versions of firebase-admin to determine which version is compatible with other requirements. This could take a while.
+ERROR: Cannot install -r requirements.txt (line 7) and google-cloud-firestore==2.20.2 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested google-cloud-firestore==2.20.2
+    firebase-admin 7.0.0 depends on google-cloud-firestore>=2.21.0; platform_python_implementation != "PyPy"
+
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip to attempt to solve the dependency conflict
+
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/#dealing-with-dependency-conflicts
+The command '/bin/sh -c pip install --no-cache-dir -r requirements.txt' returned a non-zero code: 1
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/gcb-internal" failed: step exited with non-zero status: 1
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/gcb-internal" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build ae37bb5b-807b-431f-ba9e-976839901ba2 completed with status "FAILURE"
+
+=================================================== CORREÇÃO ==================================================================================================
+O erro agora é somente de dependências Python incompatíveis.
+O firebase-admin==7.0.0 exige:
+google-cloud-firestore >= 2.21.0
+google-cloud-storage >= 3.1.1
+
+e o pacote anterior estava fixando versões menores. Isso é confirmado nas notas de release do Firebase Admin Python. firebase.google.com
+Corrigi o projeto.
+cognotxt_cloud_producao_corrigido.zip
+Se preferir corrigir diretamente no Cloud Shell, edite:
+nano api/requirements.txt
+
+e deixe assim:
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+gunicorn==23.0.0
+google-cloud-storage==3.1.1
+google-cloud-firestore==2.21.0
+google-auth==2.40.3
+firebase-admin==7.0.0
+pydantic==2.11.7
+
+Depois rode novamente apenas o build da API:
+gcloud builds submit ./api \
+  --tag us-central1-docker.pkg.dev/grafemapdf/cognotxt/api:latest \
+  --project grafemapdf
+
+Se aparecer:
+SUCCESS
+
+então rode novamente:
+./infra/deploy.sh
+
+Também alinhei no pacote corrigido:
+dispatcher:
+google-cloud-firestore==2.21.0
+
+worker:
+google-cloud-storage==3.1.1
+google-cloud-firestore==2.21.0
+
+Assim evitamos inconsistências entre as três imagens Docker.
+O erro que você teve não tem relação com GCP, IAM ou Docker; foi exclusivamente o resolvedor do pip recusando versões incompatíveis. A próxima tentativa já deve ultrapassar essa etapa.
+
+=====================================================================================================================================================
+
+
+
+
+
+=====================================================================================================================================================
+
+Se funcionar, você verá algo parecido com:
+BUILD
+...
+PUSH
+...
+SUCCESS
+
+Pode aparecer um segundo erro
+Depois de autorizar seu usuário, o Cloud Build pode conseguir iniciar o build mas falhar ao enviar a imagem para o Artifact Registry.
+Nesse caso, a conta de serviço usada pelo Cloud Build precisa ter:
+Artifact Registry Writer
+roles/artifactregistry.writer
+
+O Google recomenda esse papel para a service account que executa builds quando ela precisa publicar imagens no Artifact Registry. Google Cloud Documentation
+Primeiro descubra o número do projeto:
+gcloud projects describe grafemapdf \
+  --format="value(projectNumber)"
+
+Suponha que retorne:
+123456789012
+
+Confira qual conta o Cloud Build está utilizando:
+gcloud builds get-default-service-account \
+  --project=grafemapdf
+
+Se retornar, por exemplo:
+123456789012-compute@developer.gserviceaccount.com
+
+dê a ela permissão:
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="serviceAccount:123456789012-compute@developer.gserviceaccount.com" \
+  --role="roles/artifactregistry.writer"
+
+Em projetos/configurações que usam a service account legada, pode aparecer:
+123456789012@cloudbuild.gserviceaccount.com
+
+Nesse caso use exatamente a conta retornada pelo comando anterior. Não assuma o nome.
+Sequência que eu recomendo agora
+Execute:
+gcloud config set project grafemapdf
+
+gcloud auth list
+
+Confirme que aparece:
+arquitetura.joel@gmail.com  ACTIVE
+
+Depois:
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="user:arquitetura.joel@gmail.com" \
+  --role="roles/cloudbuild.builds.editor"
+
+E teste:
+gcloud builds submit ./api \
+  --tag us-central1-docker.pkg.dev/grafemapdf/cognotxt/api:latest
+
+Se esse comando terminar com SUCCESS, então você pode voltar a executar o nosso:
+./infra/deploy.sh
+
+O ponto importante é: não dê Owner só para resolver isso. Cloud Build Editor para seu usuário é suficiente para iniciar o build,
+e Artifact Registry Writer deve ficar na service account do build quando necessário. Isso mantém o IAM bem mais seguro.
+
+
+
+
+
+
+
+
+==========================================================================================================
+
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud projects add-iam-policy-binding grafemapdf \
+  --member="user:arquitetura.joel@gmail.com" \
+  --role="roles/cloudbuild.builds.editor"
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/cloudbuild.builds.editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+  role: roles/eventarc.eventReceiver
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd0nmq1cM=
+version: 1
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 A primeira execução pode levar alguns minutos porque três imagens Docker serão construídas.
 
