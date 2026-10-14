@@ -1,0 +1,12 @@
+COGNOTXT CLOUD - COMEÇE AQUI
+
+1. Leia README.md.
+2. No Firebase, ative Authentication por e-mail/senha e crie um usuário.
+3. Crie Firestore em Native mode.
+4. Abra Cloud Shell.
+5. Copie infra/config.env.example para infra/config.env e preencha.
+6. Execute: ./infra/deploy.sh
+7. Copie frontend/config.example.js para frontend/config.js.
+8. Coloque no config.js a URL da API exibida pelo deploy e os dados do Firebase.
+9. Publique frontend/ no GitHub Pages.
+10. Faça primeiro um teste com PDF pequeno.

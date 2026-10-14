@@ -1,0 +1,5 @@
+infra/config.env
+frontend/config.js
+__pycache__/
+*.pyc
+.DS_Store

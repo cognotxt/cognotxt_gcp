@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CognoTXT</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><div class="brand">CognoTXT</div><button id="logoutBtn" class="ghost hidden">Sair</button></header>
+
+  <main>
+    <section id="loginView" class="card login-card">
+      <h1>Acesso ao processamento</h1>
+      <p>Entre com seu e-mail e senha.</p>
+      <form id="loginForm">
+        <label>E-mail<input id="email" type="email" required autocomplete="username"></label>
+        <label>Senha<input id="password" type="password" required autocomplete="current-password"></label>
+        <button type="submit">Entrar</button>
+        <div id="loginError" class="error"></div>
+      </form>
+    </section>
+
+    <section id="appView" class="hidden">
+      <div class="topline">
+        <div><h1>Processamento de PDFs</h1><p id="userEmail"></p></div>
+        <div class="upload-box">
+          <input id="fileInput" type="file" accept="application/pdf,.pdf" multiple>
+          <button id="uploadBtn">Enviar PDFs</button>
+        </div>
+      </div>
+
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>Arquivo</th><th>Upload</th><th>Processamento</th><th>Status</th><th>Download</th></tr></thead>
+          <tbody id="jobsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
