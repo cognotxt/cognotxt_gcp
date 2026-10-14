@@ -1181,9 +1181,9 @@ google-cloud-firestore==2.21.0
 Assim evitamos inconsistências entre as três imagens Docker.
 O erro que você teve não tem relação com GCP, IAM ou Docker; foi exclusivamente o resolvedor do pip recusando versões incompatíveis. A próxima tentativa já deve ultrapassar essa etapa.
 
-=====================================================================================================================================================
+=============================CORREÇÃO  ========================================================================================================
 
-
+feito ajuste no requirements.txt
 
 
 
@@ -1195,6 +1195,8 @@ BUILD
 PUSH
 ...
 SUCCESS
+
+
 
 Pode aparecer um segundo erro
 Depois de autorizar seu usuário, o Cloud Build pode conseguir iniciar o build mas falhar ao enviar a imagem para o Artifact Registry.
@@ -1260,78 +1262,745 @@ e Artifact Registry Writer deve ficar na service account do build quando necess�
 ==========================================================================================================
 
 
-arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud projects add-iam-policy-binding grafemapdf \
-  --member="user:arquitetura.joel@gmail.com" \
-  --role="roles/cloudbuild.builds.editor"
-Updated IAM policy for project [grafemapdf].
-bindings:
-- members:
-  - serviceAccount:service-940153605624@gcp-sa-artifactregistry.iam.gserviceaccount.com
-  role: roles/artifactregistry.serviceAgent
-- members:
-  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
-  role: roles/cloudbuild.builds.builder
-- members:
-  - user:arquitetura.joel@gmail.com
-  role: roles/cloudbuild.builds.editor
-- members:
-  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
-  role: roles/cloudbuild.serviceAgent
-- members:
-  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
-  role: roles/containerregistry.ServiceAgent
+
+
+ - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/storage.objectCreator
 - members:
   - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
-  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
   - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
-  role: roles/datastore.user
-- members:
-  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
-  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
-  role: roles/documentai.apiUser
-- members:
-  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
-  role: roles/documentai.viewer
-- members:
-  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
-  role: roles/documentaicore.serviceAgent
-- members:
-  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
-  role: roles/editor
-- members:
-  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
-  role: roles/eventarc.eventReceiver
-- members:
-  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
-  role: roles/firebase.managementServiceAgent
-- members:
-  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
-  role: roles/firebase.sdkAdminServiceAgent
-- members:
-  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
-  role: roles/firebaseauth.admin
-- members:
-  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
-  role: roles/firebaserules.system
-- members:
-  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
-  role: roles/firestore.serviceAgent
-- members:
-  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
-  role: roles/iam.serviceAccountTokenCreator
-- members:
-  - user:arquitetura.joel@gmail.com
-  role: roles/owner
-- members:
-  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
-  role: roles/run.developer
-- members:
-  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
-  role: roles/run.serviceAgent
-etag: BwZd0nmq1cM=
+  role: roles/storage.objectViewer
+etag: CAs=
+kind: storage#policy
+resourceId: projects/_/buckets/grafemapdf-anater-cognotxt
 version: 1
+
+== Artifact Registry ==
+
+== Build das imagens ==
+Creating temporary archive of 3 file(s) totalling 6.1 KiB before compression.
+Uploading tarball of [/home/arquitetura_joel/cognotxt_gcp/api] to [gs://grafemapdf_cloudbuild/source/1792010944.236616-b11896abd55d4179a9cb999a9f43df3e.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/grafemapdf/locations/global/builds/101f520d-201b-471a-b238-846234061d49].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/101f520d-201b-471a-b238-846234061d49?project=940153605624 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+--------------------------------------------------------------------------------------------------------------------- REMOTE BUILD OUTPUT ----------------------------------------------------------------------------------------------------------------------
+starting build "101f520d-201b-471a-b238-846234061d49"
+
+FETCHSOURCE
+Fetching storage object: gs://grafemapdf_cloudbuild/source/1792010944.236616-b11896abd55d4179a9cb999a9f43df3e.tgz#1792010944454724
+Copying gs://grafemapdf_cloudbuild/source/1792010944.236616-b11896abd55d4179a9cb999a9f43df3e.tgz#1792010944454724...
+/ [1 files][  2.8 KiB/  2.8 KiB]                                                
+Operation completed over 1 objects/2.8 KiB.
+BUILD
+Already have image (with digest): gcr.io/cloud-builders/gcb-internal
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  9.728kB
+Step 1/7 : FROM python:3.12-slim
+3.12-slim: Pulling from library/python
+ecc510c1e359: Already exists
+75b6a36c64a1: Pulling fs layer
+6912e23eb445: Pulling fs layer
+bbc5a1223747: Pulling fs layer
+bbc5a1223747: Verifying Checksum
+bbc5a1223747: Download complete
+6912e23eb445: Verifying Checksum
+6912e23eb445: Download complete
+75b6a36c64a1: Verifying Checksum
+75b6a36c64a1: Download complete
+75b6a36c64a1: Pull complete
+6912e23eb445: Pull complete
+bbc5a1223747: Pull complete
+Digest: sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+Status: Downloaded newer image for python:3.12-slim
+ df18428df8a0
+Step 2/7 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ Running in 6914d86ea2c7
+Removing intermediate container 6914d86ea2c7
+ e5bd4c4687ba
+Step 3/7 : WORKDIR /app
+ Running in c90eb9927912
+Removing intermediate container c90eb9927912
+ 4af4b0c7bc1e
+Step 4/7 : COPY requirements.txt .
+ 6076fa55510b
+Step 5/7 : RUN pip install --no-cache-dir -r requirements.txt
+ Running in e454d94e2366
+Collecting fastapi==0.115.12 (from -r requirements.txt (line 1))
+  Downloading fastapi-0.115.12-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn==0.34.2 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading uvicorn-0.34.2-py3-none-any.whl.metadata (6.5 kB)
+Collecting gunicorn==23.0.0 (from -r requirements.txt (line 3))
+  Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting google-cloud-storage==3.1.1 (from -r requirements.txt (line 4))
+  Downloading google_cloud_storage-3.1.1-py3-none-any.whl.metadata (13 kB)
+Collecting google-cloud-firestore==2.21.0 (from -r requirements.txt (line 5))
+  Downloading google_cloud_firestore-2.21.0-py3-none-any.whl.metadata (9.9 kB)
+Collecting google-auth==2.40.3 (from -r requirements.txt (line 6))
+  Downloading google_auth-2.40.3-py2.py3-none-any.whl.metadata (6.2 kB)
+Collecting firebase-admin==7.0.0 (from -r requirements.txt (line 7))
+  Downloading firebase_admin-7.0.0-py3-none-any.whl.metadata (1.7 kB)
+Collecting pydantic==2.11.7 (from -r requirements.txt (line 8))
+  Downloading pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+Collecting starlette<0.47.0,>=0.40.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading starlette-0.46.2-py3-none-any.whl.metadata (6.2 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting click>=7.0 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting packaging (from gunicorn==23.0.0->-r requirements.txt (line 3))
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting google-api-core<3.0.0,>=2.15.0 (from google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading google_api_core-2.42.0-py3-none-any.whl.metadata (3.2 kB)
+Collecting google-cloud-core<3.0.0,>=2.4.2 (from google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading google_cloud_core-2.8.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting google-resumable-media<3.0.0,>=2.7.2 (from google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading google_resumable_media-2.11.0-py3-none-any.whl.metadata (2.3 kB)
+Collecting requests<3.0.0,>=2.22.0 (from google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting google-crc32c<2.0.0,>=1.1.3 (from google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading google_crc32c-1.9.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.2 kB)
+Collecting proto-plus<2.0.0,>=1.22.0 (from google-cloud-firestore==2.21.0->-r requirements.txt (line 5))
+  Downloading proto_plus-1.29.0-py3-none-any.whl.metadata (2.2 kB)
+Collecting protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<7.0.0dev,>=3.20.2 (from google-cloud-firestore==2.21.0->-r requirements.txt (line 5))
+  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+Collecting cachetools<6.0,>=2.0.0 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading cachetools-5.5.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting pyasn1-modules>=0.2.1 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting rsa<5,>=3.1.4 (from google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading rsa-4.9.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting cachecontrol>=0.14.3 (from firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading cachecontrol-0.14.4-py3-none-any.whl.metadata (3.1 kB)
+Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+Collecting httpx==0.28.1 (from httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting annotated-types>=0.6.0 (from pydantic==2.11.7->-r requirements.txt (line 8))
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.33.2 (from pydantic==2.11.7->-r requirements.txt (line 8))
+  Downloading pydantic_core-2.33.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Collecting typing-inspection>=0.4.0 (from pydantic==2.11.7->-r requirements.txt (line 8))
+  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting httptools>=0.6.3 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting pyyaml>=5.1 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting uvloop!=0.15.0,!=0.15.1,>=0.14.0 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+Collecting watchfiles>=0.13 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+Collecting websockets>=10.4 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+Collecting anyio (from httpx==0.28.1->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Collecting certifi (from httpx==0.28.1->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx==0.28.1->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting idna (from httpx==0.28.1->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting h2<5,>=3 (from httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading h2-4.4.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting msgpack<2.0.0,>=0.5.2 (from cachecontrol>=0.14.3->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading msgpack-1.2.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+Collecting googleapis-common-protos<2.0.0,>=1.69.2 (from google-api-core<3.0.0,>=2.15.0->google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading googleapis_common_protos-1.75.5-py3-none-any.whl.metadata (8.5 kB)
+Collecting opentelemetry-api<2.0.0,>=1.44.0 (from google-api-core<3.0.0,>=2.15.0->google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
+Collecting grpcio<2.0.0,>=1.59.0 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 5))
+  Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.8 kB)
+Collecting grpcio-status<2.0.0,>=1.59.0 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 5))
+  Downloading grpcio_status-1.84.0-py3-none-any.whl.metadata (1.3 kB)
+Collecting pyasn1<0.7.0,>=0.6.1 (from pyasn1-modules>=0.2.1->google-auth==2.40.3->-r requirements.txt (line 6))
+  Downloading pyasn1-0.6.4-py3-none-any.whl.metadata (8.4 kB)
+Collecting cryptography>=3.4.0 (from pyjwt[crypto]>=2.10.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.4 kB)
+Collecting charset_normalizer<4,>=2 (from requests<3.0.0,>=2.22.0->google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+Collecting urllib3<3,>=1.26 (from requests<3.0.0,>=2.22.0->google-cloud-storage==3.1.1->-r requirements.txt (line 4))
+  Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting cffi>=2.0.0 (from cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+Collecting hyperframe<7,>=6.1 (from h2<5,>=3->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading hyperframe-6.1.0-py3-none-any.whl.metadata (4.3 kB)
+Collecting hpack<5,>=4.2 (from h2<5,>=3->httpx[http2]==0.28.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading hpack-4.2.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->firebase-admin==7.0.0->-r requirements.txt (line 7))
+  Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+Downloading fastapi-0.115.12-py3-none-any.whl (95 kB)
+Downloading uvicorn-0.34.2-py3-none-any.whl (62 kB)
+Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+Downloading google_cloud_storage-3.1.1-py3-none-any.whl (175 kB)
+Downloading google_cloud_firestore-2.21.0-py3-none-any.whl (368 kB)
+Downloading google_auth-2.40.3-py2.py3-none-any.whl (216 kB)
+Downloading firebase_admin-7.0.0-py3-none-any.whl (136 kB)
+Downloading pydantic-2.11.7-py3-none-any.whl (444 kB)
+Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+Downloading pydantic_core-2.33.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 314.9 MB/s eta 0:00:00
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading cachecontrol-0.14.4-py3-none-any.whl (22 kB)
+Downloading cachetools-5.5.2-py3-none-any.whl (10 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading google_api_core-2.42.0-py3-none-any.whl (221 kB)
+Downloading google_cloud_core-2.8.0-py3-none-any.whl (31 kB)
+Downloading google_crc32c-1.9.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (36 kB)
+Downloading google_resumable_media-2.11.0-py3-none-any.whl (81 kB)
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 51.6 MB/s eta 0:00:00
+Downloading proto_plus-1.29.0-py3-none-any.whl (50 kB)
+Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 525.7 MB/s eta 0:00:00
+Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+Downloading rsa-4.9.1-py3-none-any.whl (34 kB)
+Downloading starlette-0.46.2-py3-none-any.whl (72 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 224.9 MB/s eta 0:00:00
+Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (225 kB)
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 220.2 MB/s eta 0:00:00
+Downloading googleapis_common_protos-1.75.5-py3-none-any.whl (307 kB)
+Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (7.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.2/7.2 MB 152.3 MB/s eta 0:00:00
+Downloading grpcio_status-1.84.0-py3-none-any.whl (14 kB)
+Downloading h2-4.4.1-py3-none-any.whl (62 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading msgpack-1.2.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (472 kB)
+Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+Downloading pyasn1-0.6.4-py3-none-any.whl (84 kB)
+Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+Downloading hpack-4.2.0-py3-none-any.whl (34 kB)
+Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+Installing collected packages: websockets, uvloop, urllib3, typing-extensions, pyyaml, python-dotenv, pyjwt, pycparser, pyasn1, protobuf, packaging, msgpack, idna, hyperframe, httptools, hpack, h11, google-crc32c, click, charset_normalizer, certifi, cachetools, annotated-types, uvicorn, typing-inspection, rsa, requests, pydantic-core, pyasn1-modules, proto-plus, opentelemetry-api, httpcore, h2, gunicorn, grpcio, googleapis-common-protos, google-resumable-media, cffi, anyio, watchfiles, starlette, pydantic, httpx, grpcio-status, google-auth, cryptography, cachecontrol, google-api-core, fastapi, google-cloud-core, google-cloud-storage, google-cloud-firestore, firebase-admin
+Successfully installed annotated-types-0.8.0 anyio-4.15.1 cachecontrol-0.14.4 cachetools-5.5.2 certifi-2026.7.22 cffi-2.1.1 charset_normalizer-3.5.2 click-8.5.0 cryptography-50.0.2 fastapi-0.115.12 firebase-admin-7.0.0 google-api-core-2.42.0 google-auth-2.40.3 google-cloud-core-2.8.0 google-cloud-firestore-2.21.0 google-cloud-storage-3.1.1 google-crc32c-1.9.0 google-resumable-media-2.11.0 googleapis-common-protos-1.75.5 grpcio-1.84.0 grpcio-status-1.84.0 gunicorn-23.0.0 h11-0.16.0 h2-4.4.1 hpack-4.2.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 hyperframe-6.1.0 idna-3.20 msgpack-1.2.3 opentelemetry-api-1.45.1 packaging-26.3 proto-plus-1.29.0 protobuf-6.33.6 pyasn1-0.6.4 pyasn1-modules-0.4.2 pycparser-3.11 pydantic-2.11.7 pydantic-core-2.33.2 pyjwt-2.15.1 python-dotenv-1.2.4 pyyaml-6.0.3 requests-2.34.2 rsa-4.9.1 starlette-0.46.2 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.34.2 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Removing intermediate container e454d94e2366
+ 7c013b443afe
+Step 6/7 : COPY main.py .
+ 8e03989f83d7
+Step 7/7 : CMD exec gunicorn -k uvicorn.workers.UvicornWorker -b :${PORT:-8080} --workers 2 --threads 4 --timeout 0 main:app
+ Running in 5bbb6a1b8b82
+Removing intermediate container 5bbb6a1b8b82
+ f398a820f34c
+Successfully built f398a820f34c
+Successfully tagged us-central1-docker.pkg.dev/grafemapdf/cognotxt/api:latest
+
+--------------------------------------------------------------------------------------------------------------------- REMOTE BUILD OUTPUT ----------------------------------------------------------------------------------------------------------------------
+starting build "0730dfeb-b49b-4cd8-8b02-97be6c885863"
+
+FETCHSOURCE
+Fetching storage object: gs://grafemapdf_cloudbuild/source/1792011003.080343-0ec41ebf4de04be78383092cc3641074.tgz#1792011003300962
+Copying gs://grafemapdf_cloudbuild/source/1792011003.080343-0ec41ebf4de04be78383092cc3641074.tgz#1792011003300962...
+/ [1 files][  1.7 KiB/  1.7 KiB]                                                
+Operation completed over 1 objects/1.7 KiB.
+BUILD
+Already have image (with digest): gcr.io/cloud-builders/gcb-internal
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  7.168kB
+Step 1/7 : FROM python:3.12-slim
+3.12-slim: Pulling from library/python
+ecc510c1e359: Pulling fs layer
+75b6a36c64a1: Pulling fs layer
+6912e23eb445: Pulling fs layer
+bbc5a1223747: Pulling fs layer
+bbc5a1223747: Verifying Checksum
+bbc5a1223747: Download complete
+75b6a36c64a1: Download complete
+ecc510c1e359: Verifying Checksum
+ecc510c1e359: Download complete
+6912e23eb445: Verifying Checksum
+6912e23eb445: Download complete
+ecc510c1e359: Pull complete
+75b6a36c64a1: Pull complete
+6912e23eb445: Pull complete
+bbc5a1223747: Pull complete
+Digest: sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+Status: Downloaded newer image for python:3.12-slim
+ df18428df8a0
+Step 2/7 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ Running in 1f24d6ddf809
+Removing intermediate container 1f24d6ddf809
+ cb76f5dc8ff2
+Step 3/7 : WORKDIR /app
+ Running in 12f59f5fc23a
+Removing intermediate container 12f59f5fc23a
+ fe33b8184f2e
+Step 4/7 : COPY requirements.txt .
+ 401bb65588d9
+Step 5/7 : RUN pip install --no-cache-dir -r requirements.txt
+ Running in 20cb1864b703
+Collecting fastapi==0.115.12 (from -r requirements.txt (line 1))
+  Downloading fastapi-0.115.12-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn==0.34.2 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading uvicorn-0.34.2-py3-none-any.whl.metadata (6.5 kB)
+Collecting gunicorn==23.0.0 (from -r requirements.txt (line 3))
+  Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+Collecting google-cloud-firestore==2.21.0 (from -r requirements.txt (line 4))
+  Downloading google_cloud_firestore-2.21.0-py3-none-any.whl.metadata (9.9 kB)
+Collecting google-auth==2.40.3 (from -r requirements.txt (line 5))
+  Downloading google_auth-2.40.3-py2.py3-none-any.whl.metadata (6.2 kB)
+Collecting requests==2.32.4 (from -r requirements.txt (line 6))
+  Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+Collecting starlette<0.47.0,>=0.40.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading starlette-0.46.2-py3-none-any.whl.metadata (6.2 kB)
+Collecting pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading pydantic-2.14.1-py3-none-any.whl.metadata (133 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting click>=7.0 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn==0.34.2->uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting packaging (from gunicorn==23.0.0->-r requirements.txt (line 3))
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting google-api-core!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading google_api_core-2.42.0-py3-none-any.whl.metadata (3.2 kB)
+Collecting google-cloud-core<3.0.0,>=1.4.1 (from google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading google_cloud_core-2.8.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting proto-plus<2.0.0,>=1.22.0 (from google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading proto_plus-1.29.0-py3-none-any.whl.metadata (2.2 kB)
+Collecting protobuf!=3.20.0,!=3.20.1,!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<7.0.0dev,>=3.20.2 (from google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+Collecting cachetools<6.0,>=2.0.0 (from google-auth==2.40.3->-r requirements.txt (line 5))
+  Downloading cachetools-5.5.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting pyasn1-modules>=0.2.1 (from google-auth==2.40.3->-r requirements.txt (line 5))
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting rsa<5,>=3.1.4 (from google-auth==2.40.3->-r requirements.txt (line 5))
+  Downloading rsa-4.9.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting charset_normalizer<4,>=2 (from requests==2.32.4->-r requirements.txt (line 6))
+  Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+Collecting idna<4,>=2.5 (from requests==2.32.4->-r requirements.txt (line 6))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting urllib3<3,>=1.21.1 (from requests==2.32.4->-r requirements.txt (line 6))
+  Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting certifi>=2017.4.17 (from requests==2.32.4->-r requirements.txt (line 6))
+  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Collecting httptools>=0.6.3 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting pyyaml>=5.1 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting uvloop!=0.15.0,!=0.15.1,>=0.14.0 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+Collecting watchfiles>=0.13 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+Collecting websockets>=10.4 (from uvicorn[standard]==0.34.2->-r requirements.txt (line 2))
+  Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+Collecting googleapis-common-protos<2.0.0,>=1.69.2 (from google-api-core!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading googleapis_common_protos-1.75.5-py3-none-any.whl.metadata (8.5 kB)
+INFO: pip is looking at multiple versions of google-api-core to determine which version is compatible with other requirements. This could take a while.
+Collecting google-api-core!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading google_api_core-2.41.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.40.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.39.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.38.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.37.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.36.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.34.0-py3-none-any.whl.metadata (2.9 kB)
+INFO: pip is still looking at multiple versions of google-api-core to determine which version is compatible with other requirements. This could take a while.
+  Downloading google_api_core-2.33.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.32.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.31.0-py3-none-any.whl.metadata (3.2 kB)
+  Downloading google_api_core-2.30.3-py3-none-any.whl.metadata (3.1 kB)
+INFO: pip is looking at multiple versions of google-api-core[grpc] to determine which version is compatible with other requirements. This could take a while.
+INFO: pip is still looking at multiple versions of google-api-core[grpc] to determine which version is compatible with other requirements. This could take a while.
+Collecting grpcio<2.0.0,>=1.33.2 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.8 kB)
+Collecting grpcio-status<2.0.0,>=1.33.2 (from google-api-core[grpc]!=2.0.*,!=2.1.*,!=2.10.*,!=2.2.*,!=2.3.*,!=2.4.*,!=2.5.*,!=2.6.*,!=2.7.*,!=2.8.*,!=2.9.*,<3.0.0,>=1.34.0->google-cloud-firestore==2.21.0->-r requirements.txt (line 4))
+  Downloading grpcio_status-1.84.0-py3-none-any.whl.metadata (1.3 kB)
+Collecting pyasn1<0.7.0,>=0.6.1 (from pyasn1-modules>=0.2.1->google-auth==2.40.3->-r requirements.txt (line 5))
+  Downloading pyasn1-0.6.4-py3-none-any.whl.metadata (8.4 kB)
+Collecting annotated-types>=0.6.0 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.50.1 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading pydantic_core-2.50.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.5 kB)
+Collecting typing-inspection>=0.4.4 (from pydantic!=1.8,!=1.8.1,!=2.0.0,!=2.0.1,!=2.1.0,<3.0.0,>=1.7.4->fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting anyio<5,>=3.6.2 (from starlette<0.47.0,>=0.40.0->fastapi==0.115.12->-r requirements.txt (line 1))
+  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Downloading fastapi-0.115.12-py3-none-any.whl (95 kB)
+Downloading uvicorn-0.34.2-py3-none-any.whl (62 kB)
+Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+Downloading google_cloud_firestore-2.21.0-py3-none-any.whl (368 kB)
+Downloading google_auth-2.40.3-py2.py3-none-any.whl (216 kB)
+Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+Downloading cachetools-5.5.2-py3-none-any.whl (10 kB)
+Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading google_api_core-2.30.3-py3-none-any.whl (173 kB)
+Downloading google_cloud_core-2.8.0-py3-none-any.whl (31 kB)
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 434.4 MB/s eta 0:00:00
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading proto_plus-1.29.0-py3-none-any.whl (50 kB)
+Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+Downloading pydantic_core-2.50.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 209.0 MB/s eta 0:00:00
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 462.2 MB/s eta 0:00:00
+Downloading rsa-4.9.1-py3-none-any.whl (34 kB)
+Downloading starlette-0.46.2-py3-none-any.whl (72 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 245.1 MB/s eta 0:00:00
+Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+Downloading websockets-17.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (225 kB)
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+Downloading googleapis_common_protos-1.75.5-py3-none-any.whl (307 kB)
+Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (7.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.2/7.2 MB 306.4 MB/s eta 0:00:00
+Downloading grpcio_status-1.84.0-py3-none-any.whl (14 kB)
+Downloading pyasn1-0.6.4-py3-none-any.whl (84 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Installing collected packages: websockets, uvloop, urllib3, typing-extensions, pyyaml, python-dotenv, pyasn1, protobuf, packaging, idna, httptools, h11, click, charset_normalizer, certifi, cachetools, annotated-types, uvicorn, typing-inspection, rsa, requests, pydantic-core, pyasn1-modules, proto-plus, gunicorn, grpcio, googleapis-common-protos, anyio, watchfiles, starlette, pydantic, grpcio-status, google-auth, google-api-core, fastapi, google-cloud-core, google-cloud-firestore
+Successfully installed annotated-types-0.8.0 anyio-4.15.1 cachetools-5.5.2 certifi-2026.7.22 charset_normalizer-3.5.2 click-8.5.0 fastapi-0.115.12 google-api-core-2.30.3 google-auth-2.40.3 google-cloud-core-2.8.0 google-cloud-firestore-2.21.0 googleapis-common-protos-1.75.5 grpcio-1.84.0 grpcio-status-1.84.0 gunicorn-23.0.0 h11-0.16.0 httptools-0.9.0 idna-3.20 packaging-26.3 proto-plus-1.29.0 protobuf-6.33.6 pyasn1-0.6.4 pyasn1-modules-0.4.2 pydantic-2.14.1 pydantic-core-2.50.1 python-dotenv-1.2.4 pyyaml-6.0.3 requests-2.32.4 rsa-4.9.1 starlette-0.46.2 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.34.2 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Removing intermediate container 20cb1864b703
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+Step 4/8 : RUN apt-get update && apt-get install -y --no-install-recommends libglib2.0-0 libgl1 && rm -rf /var/lib/apt/lists/*
+ Running in 7601d5a29a48
+Hit:1 http://deb.debian.org/debian trixie InRelease
+Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]
+Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [267 kB]
+Fetched 10.0 MB in 2s (5918 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libatomic1 libdrm-amdgpu1 libdrm-common libdrm-intel1 libdrm2 libedit2
+  libelf1t64 libexpat1 libgbm1 libgl1-mesa-dri libglvnd0 libglx-mesa0 libglx0
+  libllvm19 libpciaccess0 libsensors-config libsensors5 libvulkan1
+  libwayland-server0 libx11-6 libx11-data libx11-xcb1 libxau6 libxcb-dri3-0
+  libxcb-glx0 libxcb-present0 libxcb-randr0 libxcb-shm0 libxcb-sync1
+  libxcb-xfixes0 libxcb1 libxdmcp6 libxext6 libxml2 libxshmfence1 libxxf86vm1
+  libz3-4 mesa-libgallium
+Suggested packages:
+  low-memory-monitor pciutils lm-sensors
+Recommended packages:
+  libglib2.0-data shared-mime-info xdg-user-dirs mesa-vulkan-drivers
+  | vulkan-icd
+The following NEW packages will be installed:
+  libatomic1 libdrm-amdgpu1 libdrm-common libdrm-intel1 libdrm2 libedit2
+  libelf1t64 libexpat1 libgbm1 libgl1 libgl1-mesa-dri libglib2.0-0t64
+  libglvnd0 libglx-mesa0 libglx0 libllvm19 libpciaccess0 libsensors-config
+  libsensors5 libvulkan1 libwayland-server0 libx11-6 libx11-data libx11-xcb1
+  libxau6 libxcb-dri3-0 libxcb-glx0 libxcb-present0 libxcb-randr0 libxcb-shm0
+  libxcb-sync1 libxcb-xfixes0 libxcb1 libxdmcp6 libxext6 libxml2 libxshmfence1
+  libxxf86vm1 libz3-4 mesa-libgallium
+0 upgraded, 40 newly installed, 0 to remove and 1 not upgraded.
+Need to get 50.1 MB of archives.
+After this operation, 218 MB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian trixie/main amd64 libexpat1 amd64 2.8.3-1~deb13u1 [123 kB]
+Get:2 http://deb.debian.org/debian trixie/main amd64 libatomic1 amd64 14.2.0-19 [9308 B]
+Get:3 http://deb.debian.org/debian trixie/main amd64 libdrm-common all 2.4.124-2 [8288 B]
+Get:4 http://deb.debian.org/debian trixie/main amd64 libdrm2 amd64 2.4.124-2 [39.0 kB]
+Get:5 http://deb.debian.org/debian trixie/main amd64 libdrm-amdgpu1 amd64 2.4.124-2 [22.6 kB]
+Get:6 http://deb.debian.org/debian trixie/main amd64 libpciaccess0 amd64 0.17-3+b3 [51.9 kB]
+Get:7 http://deb.debian.org/debian trixie/main amd64 libdrm-intel1 amd64 2.4.124-2 [64.1 kB]
+Get:8 http://deb.debian.org/debian trixie/main amd64 libedit2 amd64 3.1-20250104-1 [93.8 kB]
+Get:9 http://deb.debian.org/debian trixie/main amd64 libelf1t64 amd64 0.192-4 [189 kB]
+Get:10 http://deb.debian.org/debian trixie/main amd64 libwayland-server0 amd64 1.23.1-3 [34.4 kB]
+Get:11 http://deb.debian.org/debian trixie/main amd64 libxml2 amd64 2.12.7+dfsg+really2.9.14-2.1+deb13u3 [700 kB]
+Get:12 http://deb.debian.org/debian trixie/main amd64 libz3-4 amd64 4.13.3-1 [8560 kB]
+Get:13 http://deb.debian.org/debian trixie/main amd64 libllvm19 amd64 1:19.1.7-3+b1 [26.0 MB]
+Get:14 http://deb.debian.org/debian trixie/main amd64 libsensors-config all 1:3.6.2-2 [16.2 kB]
+Get:15 http://deb.debian.org/debian trixie/main amd64 libsensors5 amd64 1:3.6.2-2 [37.5 kB]
+Get:16 http://deb.debian.org/debian trixie/main amd64 libxau6 amd64 1:1.0.11-1 [20.4 kB]
+Get:17 http://deb.debian.org/debian trixie/main amd64 libxdmcp6 amd64 1:1.1.5-1 [27.8 kB]
+Get:18 http://deb.debian.org/debian trixie/main amd64 libxcb1 amd64 1.17.0-2+b1 [144 kB]
+Get:19 http://deb.debian.org/debian trixie/main amd64 libx11-data all 2:1.8.12-1 [343 kB]
+Get:20 http://deb.debian.org/debian trixie/main amd64 libx11-6 amd64 2:1.8.12-1 [815 kB]
+Get:21 http://deb.debian.org/debian trixie/main amd64 libx11-xcb1 amd64 2:1.8.12-1 [247 kB]
+Get:22 http://deb.debian.org/debian trixie/main amd64 libxcb-dri3-0 amd64 1.17.0-2+b1 [107 kB]
+Get:23 http://deb.debian.org/debian trixie/main amd64 libxcb-present0 amd64 1.17.0-2+b1 [106 kB]
+Get:24 http://deb.debian.org/debian trixie/main amd64 libxcb-randr0 amd64 1.17.0-2+b1 [117 kB]
+Get:25 http://deb.debian.org/debian trixie/main amd64 libxcb-sync1 amd64 1.17.0-2+b1 [109 kB]
+Get:26 http://deb.debian.org/debian trixie/main amd64 libxcb-xfixes0 amd64 1.17.0-2+b1 [109 kB]
+Get:27 http://deb.debian.org/debian trixie/main amd64 libxshmfence1 amd64 1.3.3-1 [10.9 kB]
+Get:28 http://deb.debian.org/debian trixie/main amd64 mesa-libgallium amd64 25.0.7-2+deb13u1 [9630 kB]
+Get:29 http://deb.debian.org/debian trixie/main amd64 libgbm1 amd64 25.0.7-2+deb13u1 [44.6 kB]
+Get:30 http://deb.debian.org/debian trixie/main amd64 libglvnd0 amd64 1.7.0-1+b2 [52.0 kB]
+Get:31 http://deb.debian.org/debian trixie/main amd64 libxcb-glx0 amd64 1.17.0-2+b1 [122 kB]
+Get:32 http://deb.debian.org/debian trixie/main amd64 libxcb-shm0 amd64 1.17.0-2+b1 [105 kB]
+Get:33 http://deb.debian.org/debian trixie/main amd64 libxext6 amd64 2:1.3.4-1+b3 [50.4 kB]
+Get:34 http://deb.debian.org/debian trixie/main amd64 libxxf86vm1 amd64 1:1.1.4-1+b4 [19.3 kB]
+Get:35 http://deb.debian.org/debian trixie/main amd64 libvulkan1 amd64 1.4.309.0-1 [130 kB]
+Get:36 http://deb.debian.org/debian trixie/main amd64 libgl1-mesa-dri amd64 25.0.7-2+deb13u1 [46.2 kB]
+Get:37 http://deb.debian.org/debian trixie/main amd64 libglx-mesa0 amd64 25.0.7-2+deb13u1 [143 kB]
+Get:38 http://deb.debian.org/debian trixie/main amd64 libglx0 amd64 1.7.0-1+b2 [34.9 kB]
+Get:39 http://deb.debian.org/debian trixie/main amd64 libgl1 amd64 1.7.0-1+b2 [89.5 kB]
+Get:40 http://deb.debian.org/debian trixie/main amd64 libglib2.0-0t64 amd64 2.84.4-3~deb13u5 [1521 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 40.)
+debconf: falling back to frontend: Teletype
+debconf: unable to initialize frontend: Teletype
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Noninteractive
+Fetched 50.1 MB in 1s (84.4 MB/s)
+
+
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+
+Installing collected packages: urllib3, typing-extensions, PyMuPDF, pycparser, pyasn1, protobuf, numpy, idna, google-crc32c, charset_normalizer, certifi, requests, pyasn1-modules, proto-plus, opentelemetry-api, opencv-python-headless, grpcio, googleapis-common-protos, google-resumable-media, cffi, grpcio-status, cryptography, google-auth, google-api-core, google-cloud-core, google-cloud-storage, google-cloud-firestore, google-cloud-documentai
+Successfully installed PyMuPDF-1.26.1 certifi-2026.7.22 cffi-2.1.1 charset_normalizer-3.5.2 cryptography-50.0.2 google-api-core-2.42.0 google-auth-2.62.0 google-cloud-core-2.8.0 google-cloud-documentai-3.6.0 google-cloud-firestore-2.21.0 google-cloud-storage-3.1.1 google-crc32c-1.9.0 google-resumable-media-2.11.0 googleapis-common-protos-1.75.5 grpcio-1.84.0 grpcio-status-1.84.0 idna-3.20 numpy-2.2.6 opencv-python-headless-4.11.0.86 opentelemetry-api-1.45.1 proto-plus-1.29.0 protobuf-6.33.6 pyasn1-0.6.4 pyasn1-modules-0.4.2 pycparser-3.11 requests-2.34.2 typing-extensions-4.16.0 urllib3-2.8.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Removing intermediate container fda74b1fe636
+
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+== API ==
+ERROR: (gcloud.run.deploy) argument --set-env-vars: Bad syntax for dict arg: [grafemapdf.iam.gserviceaccount.com]. Please see `gcloud topic flags-file` or `gcloud topic escaping` for information on providing list or dictionary flag values with special characters.
+Usage: gcloud run deploy [[SERVICE] --namespace=NAMESPACE] [optional flags]
+  optional flags may be  --add-cloudsql-instances | --add-custom-audiences |
+                         --add-volume | --add-volume-mount |
+                         --allow-unauthenticated | --args | --async |
+                         --automatic-updates | --base-image |
+                         --binary-authorization | --breakglass |
+                         --build-env-vars-file | --build-service-account |
+                         --build-worker-pool | --clear-base-image |
+                         --clear-binary-authorization | --clear-build-env-vars |
+                         --clear-build-service-account |
+                         --clear-build-worker-pool |
+                         --clear-cloudsql-instances | --clear-custom-audiences |
+                         --clear-encryption-key-shutdown-hours |
+                         --clear-env-vars | --clear-key | --clear-labels |
+                         --clear-network | --clear-network-tags |
+                         --clear-post-key-revocation-action-type |
+                         --clear-secrets | --clear-volume-mounts |
+                         --clear-volumes | --clear-vpc-connector | --command |
+                         --concurrency | --container | --cpu | --cpu-boost |
+                         --cpu-throttling | --default-url | --depends-on |
+                         --deploy-health-check | --description |
+                         --encryption-key-shutdown-hours | --env-vars-file |
+                         --execution-environment | --function | --gpu |
+                         --gpu-type | --gpu-zonal-redundancy | --help | --iap |
+                         --image | --ingress | --invoker-iam-check | --key |
+                         --labels | --liveness-probe | --max | --max-instances |
+                         --memory | --min | --min-instances | --namespace |
+                         --network | --network-tags | --port |
+                         --post-key-revocation-action-type | --readiness-probe |
+                         --region | --regions | --remove-build-env-vars |
+                         --remove-cloudsql-instances | --remove-containers |
+                         --remove-custom-audiences | --remove-env-vars |
+                         --remove-labels | --remove-secrets | --remove-volume |
+                         --remove-volume-mount | --revision-suffix | --scaling |
+                         --scaling-concurrency-target | --scaling-cpu-target |
+                         --service-account | --session-affinity |
+                         --set-build-env-vars | --set-cloudsql-instances |
+                         --set-custom-audiences | --set-env-vars |
+                         --set-secrets | --source | --startup-probe | --subnet |
+                         --tag | --timeout | --no-traffic |
+                         --update-build-env-vars | --update-env-vars |
+                         --update-labels | --update-secrets | --use-http2 |
+                         --vpc-connector | --vpc-egress | --workdir
+
+For detailed information on this command and its flags, run:
+  gcloud run deploy --help
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ^C
+
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+atest: digest: sha256:3fd768a8d2912833e67bc2209a1a889f449c5b80b852e6209437c31c5cd89027 size: 2206
+DONE
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ID: b93d55f3-ee47-4ef5-aa1a-c0ff30dd44ce
+CREATE_TIME: 2026-10-14T21:38:00+00:00
+DURATION: 5M3S
+SOURCE: gs://grafemapdf_cloudbuild/source/1792013879.725388-15cac0be25ce4b9fa6b2d2a27afdd688.tgz
+IMAGES: us-central1-docker.pkg.dev/grafemapdf/cognotxt/worker (+1 more)
+STATUS: SUCCESS
+
+== Cloud Run Job worker ==
+ERROR: (gcloud.run.jobs.create) You do not currently have an active account selected.
+Please run:
+
+  $ gcloud auth login
+
+to obtain new credentials.
+
+If you have already logged in with a different account, run:
+
+  $ gcloud config set account ACCOUNT
+
+to select an already authenticated account to use.
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ pip install --upgrade pip
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: pip in /usr/lib/python3/dist-packages (24.0)
+Collecting pip
+  Downloading pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+Downloading pip-26.2.1-py3-none-any.whl (1.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 16.8 MB/s eta 0:00:00
+Installing collected packages: pip
+  WARNING: The scripts pip, pip3 and pip3.12 are installed in '/home/arquitetura_joel/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed pip-26.2.1
 arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
-- 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ export PATH="$PATH:/home/arquitetura_joel/.local/bin"
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+
+)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+O build terminou corretamente. O erro agora é só porque o gcloud ficou sem uma conta ativa selecionada.
+O comando:
+export PATH="$PATH:/home/arquitetura_joel/.local/bin"
+
+não corrige isso; ele só ajusta o pip.
+Execute nesta ordem:
+gcloud auth list
+
+Se aparecer sua conta, por exemplo:
+ACCOUNT
+arquitetura.joel@gmail.com
+
+mas sem * na coluna ACTIVE, selecione-a:
+gcloud config set account arquitetura.joel@gmail.com
+
+Depois confirme o projeto:
+gcloud config set project grafemapdf
+
+E valide:
+gcloud config list
+
+Você deve ver algo parecido com:
+[core]
+account = arquitetura.joel@gmail.com
+project = grafemapdf
+
+O Google confirma que gcloud auth list mostra as contas armazenadas e que gcloud config set account ... seleciona o principal ativo. Google Cloud Documentation
+Se gcloud auth list não mostrar nenhuma conta, então faça:
+gcloud auth login
+
+e depois:
+gcloud config set account arquitetura.joel@gmail.com
+gcloud config set project grafemapdf
+
+Antes de rodar tudo novamente
+Teste primeiro se sua autenticação realmente voltou:
+gcloud run jobs list \
+  --region us-central1 \
+  --project grafemapdf
+
+Se listar os jobs ou simplesmente retornar uma lista vazia sem erro de autenticação, está resolvido.
+Depois você pode continuar com:
+./infra/deploy.sh
+
+Como as imagens Docker já foram construídas com SUCCESS, o script pode refazer alguns passos, mas isso não é problema.
+Se quiser evitar repetir os builds, você também pode executar manualmente apenas a parte do script a partir de:
+== Cloud Run Job worker ==
+
+O erro atual não é mais de IAM nem de dependências Python. É somente a seleção da conta ativa no gcloud.
+
+((((((((((((((((((((((((((((((((((((((((((((  CORREÇÃO  ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud auth list
+Credentialed Accounts
+
+ACTIVE: 
+ACCOUNT: arquitetura.joel@gmail.com
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud config set account arquitetura.joel@gmail.com
+Updated property [core/account].
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud auth list
+Credentialed Accounts
+
+ACTIVE: *
+ACCOUNT: arquitetura.joel@gmail.com
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+
+
+
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
