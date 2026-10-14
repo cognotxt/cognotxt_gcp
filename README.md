@@ -1972,6 +1972,27 @@ To set the active account, run:
 
 arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
 
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud config set account arquitetura.joel@gmail.com
+Updated property [core/account].
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud config set project grafemapdf
+Updated property [core/project].
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+
+
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ gcloud run jobs list \
+  --region us-central1 \
+  --project grafemapdf
+✔
+JOB: cognotxt-worker
+REGION: us-central1
+LAST RUN AT: 
+CREATED: 2026-10-14 20:52:28 UTC
+CREATED BY: arquitetura.joel@gmail.com
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ 
+
+
+
 
 
 ======================================================================================================================================================

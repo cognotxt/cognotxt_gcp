@@ -84,6 +84,7 @@ printf '\n== Artifact Registry ==\n'
 gcloud artifacts repositories describe "$REPO" --location="$REGION" >/dev/null 2>&1 || \
   gcloud artifacts repositories create "$REPO" --repository-format=docker --location="$REGION" --description="CognoTXT containers"
 
+# parte demorada!
 printf '\n== Build das imagens ==\n'
 gcloud builds submit "$ROOT/api" --tag "$API_IMAGE"
 gcloud builds submit "$ROOT/dispatcher" --tag "$DISPATCHER_IMAGE"
@@ -120,6 +121,7 @@ gcloud run services add-iam-policy-binding cognotxt-dispatcher \
   --member="serviceAccount:$EVENTARC_SA" \
   --role="roles/run.invoker" --quiet
 
+# corrigido sintaxe
 printf '\n== API ==\n'
 gcloud run deploy cognotxt-api \
   --image="$API_IMAGE" \
@@ -128,7 +130,7 @@ gcloud run deploy cognotxt-api \
   --allow-unauthenticated \
   --cpu=1 --memory=512Mi \
   --min-instances=0 --max-instances=20 \
-  --set-env-vars="^@^BUCKET_NAME=$BUCKET_NAME@API_SERVICE_ACCOUNT_EMAIL=$API_SA@ALLOWED_ORIGINS=$FRONTEND_ORIGIN,${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15"
+  --set-env-vars="^:@^BUCKET_NAME=$BUCKET_NAME@API_SERVICE_ACCOUNT_EMAIL=$API_SA@ALLOWED_ORIGINS=$FRONTEND_ORIGIN,${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15"
 
 printf '\n== Permissões para Eventarc / Cloud Storage ==\n'
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
