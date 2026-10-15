@@ -2001,65 +2001,448 @@ arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
 
 ======================================================================================================================================================
 
+==============================================  OUTRO ERRO ========================================================================================================
+
+
+= API ==Deploying container to Cloud Run service [cognotxt-api] in project [grafemapdf] region [us-central1]OK Deploying new service... Done. OK Creating Revision...
+OK Routing traffic... OK Setting IAM Policy... Done. Service [cognotxt-api] revision [cognotxt-api-00001-8cz] has been deployed and is serving 100 percent
+of traffic.Service URL: https://cognotxt-api-940153605624.us-central1.run.app== Permissões para Eventarc /
+Cloud Storage ==ERROR: Policy modification failed. For a binding with condition, run "gcloud alpha iam policies lint-condition"
+to identify issues in condition.ERROR: (gcloud.projects.add-iam-policy-binding) 
+INVALID_ARGUMENT: Service account service-940153605624@gs-project-accounts.iam.gserviceaccount.com does not exist.
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$
+
+================================================== correção ====================================================================================================
+
+A API já está no ar. O erro agora é porque o service agent do Cloud Storage ainda não existe no projeto no momento em que o script tenta conceder:
+roles/pubsub.publisher
+
+para:
+service-940153605624@gs-project-accounts.iam.gserviceaccount.com
+
+Esse endereço é justamente o service agent padrão do Cloud Storage. Google Cloud Documentation
+Faça primeiro:
+gcloud beta services identity create \
+  --service=storage.googleapis.com \
+  --project=grafemapdf
+
+Esse comando força a criação da identidade de serviço do Cloud Storage para o projeto. Google Cloud Documentation
+Depois confirme qual é a conta correta:
+gcloud storage service-agent \
+  --project=grafemapdf
+
+Deve retornar algo semelhante a:
+service-940153605624@gs-project-accounts.iam.gserviceaccount.com
+
+Agora conceda a permissão necessária para o Eventarc receber eventos do bucket:
+STORAGE_SA="$(gcloud storage service-agent --project=grafemapdf)"
+
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="serviceAccount:${STORAGE_SA}" \
+  --role="roles/pubsub.publisher"
+
+Essa é exatamente a permissão recomendada pelo Google para eventos diretos do Cloud Storage via Eventarc. Google Cloud Documentation
+Depois valide:
+echo "$STORAGE_SA"
+
+e:
+gcloud projects get-iam-policy grafemapdf \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:${STORAGE_SA}" \
+  --format="table(bindings.role)"
+
+Você deve ver:
+roles/pubsub.publisher
+
+Depois disso, rode novamente:
+./infra/deploy.sh
+
+ou, para evitar repetir etapas já concluídas, continue no script a partir da parte de Eventarc / permissões.
+A melhoria que eu faria também no seu deploy.sh é substituir qualquer montagem manual desse endereço:
+service-${PROJECT_NUMBER}@gs-project-accounts.iam.gserviceaccount.com
+
+por:
+STORAGE_SERVICE_AGENT="$(gcloud storage service-agent --project="${PROJECT_ID}")"
+
+porque é mais seguro e deixa o próprio Google retornar a conta correta.
+
+
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+
+
+==============================================  OUTRO ERRO ========================================================================================================
+
+== API ==
+Deploying container to Cloud Run service [cognotxt-api] in project [grafemapdf] region [us-central1]
+OK Deploying... Done.                                                                                                                                                                                                                                                                                                            
+  OK Creating Revision...                                                                                                                                                                                                                                                                                                        
+  OK Routing traffic...                                                                                                                                                                                                                                                                                                          
+  OK Setting IAM Policy...                                                                                                                                                                                                                                                                                                       
+Done.                                                                                                                                                                                                                                                                                                                            
+Service [cognotxt-api] revision [cognotxt-api-00002-vbr] has been deployed and is serving 100 percent of traffic.
+Service URL: https://cognotxt-api-940153605624.us-central1.run.app
+
+== Permissões para Eventarc / Cloud Storage ==
+ERROR: Policy modification failed. For a binding with condition, run "gcloud alpha iam policies lint-condition" to identify issues in condition.
+ERROR: (gcloud.projects.add-iam-policy-binding) INVALID_ARGUMENT: Service account 
+  service-940153605624@gs-project-accounts.iam.gserviceaccount.com does not exist.
+
+======================================= corretiva ===============================================================================================================
+
+O problema está no deploy.sh, não na API. Ele continua tentando conceder a role antes de garantir que o Cloud Storage service agent exista.
+Faça exatamente isso no Cloud Shell:
+gcloud config set project grafemapdf
+
+gcloud storage service-agent --project=grafemapdf
+
+Esse comando, segundo a documentação do Google, exibe o service agent e o cria caso ainda não exista. Google Cloud Documentation
+Ele deve retornar algo como:
+service-940153605624@gs-project-accounts.iam.gserviceaccount.com
+
+Agora capture o valor:
+STORAGE_SA="$(gcloud storage service-agent --project=grafemapdf)"
+echo "$STORAGE_SA"
+
+Depois conceda a permissão:
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="serviceAccount:${STORAGE_SA}" \
+  --role="roles/pubsub.publisher"
+
+Esse roles/pubsub.publisher é exatamente o papel exigido pelo Eventarc para eventos diretos do Cloud Storage. Google Cloud Documentation
+Se ainda disser que a conta não existe, force a criação:
+gcloud beta services identity create \
+  --service=storage.googleapis.com \
+  --project=grafemapdf
+
+Depois rode novamente:
+gcloud storage service-agent --project=grafemapdf
+
+e só então:
+STORAGE_SA="$(gcloud storage service-agent --project=grafemapdf)"
+
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="serviceAccount:${STORAGE_SA}" \
+  --role="roles/pubsub.publisher"
+
+Eu também recomendo corrigir o deploy.sh. Substitua qualquer trecho semelhante a:
+STORAGE_SA="service-${PROJECT_NUMBER}@gs-project-accounts.iam.gserviceaccount.com"
+
+por:
+echo "== Inicializando Cloud Storage service agent =="
+
+STORAGE_SA="$(
+  gcloud storage service-agent \
+    --project="${PROJECT_ID}" \
+    2>/dev/null
+)"
+
+if [ -z "${STORAGE_SA}" ]; then
+  gcloud beta services identity create \
+    --service=storage.googleapis.com \
+    --project="${PROJECT_ID}"
+
+  STORAGE_SA="$(
+    gcloud storage service-agent \
+      --project="${PROJECT_ID}"
+  )"
+fi
+
+echo "Cloud Storage Service Agent: ${STORAGE_SA}"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${STORAGE_SA}" \
+  --role="roles/pubsub.publisher"
+
+Assim o script deixa de presumir que a conta já existe.
+Antes de executar novamente o deploy inteiro, valide:
+echo "$STORAGE_SA"
+
+gcloud projects get-iam-policy grafemapdf \
+  --flatten="bindings[].members" \
+  --filter="bindings.members:${STORAGE_SA}" \
+  --format="table(bindings.role)"
+
+Você deve encontrar:
+roles/pubsub.publisher
+
+Depois pode continuar com:
+./infra/deploy.sh
+
+O importante é que sua Cloud Run API já está funcionando:
+https://cognotxt-api-940153605624.us-central1.run.app
+
+Então não estamos voltando ao início; falta corrigir a cadeia Storage → Eventarc → Dispatcher.
 
 
 
 
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+
+============================================== erro project_id nao acha =============================================================
+ ==== segue corretiva =====
+
+# Captura o projeto configurado atualmente no seu gcloud shell
+PROJECT_ID=$(gcloud config get-value project)
+# Se PROJECT_ID estiver vazio ou não existir
+if [ -z "${PROJECT_ID:-}" ]; then
+    echo "⚠️ PROJECT_ID não estava definido. Tentando capturar automaticamente..."
+
+    # Tenta pegar o projeto ativo no gcloud do Cloud Shell
+    PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+
+    #VAI NA MARRA SE ESTIVER VAZIO
+    if [ -z "$PROJECT_ID" ]; then
+        PROJECT_ID="grafemapdf"
+    fi
+
+    echo "✅ PROJECT_ID definido como: $PROJECT_ID"
+fi
+
+
+printf '\n== Projeto ==\n'
+gcloud config set project "$PROJECT_ID"
+gcloud config set run/region "$REGION"
+
+echo "✅ PROJECT_ID definido como: $PROJECT_ID"
+echo "✅ $REGION definido como: $REGION"
+
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+
+
+============================================== erro  =============================================================
+ 
+
+
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+
+
+============================================== erro p =============================================================
+
+== Permissões para Eventarc / Cloud Storage ==
+== Inicializando Cloud Storage service agent ==
+Cloud Storage Service Agent SEM OS ESPAÇOS! : 'service-940153605624@gs-project-accounts.iam.gserviceaccount.com'
+Updated IAM policy for project [grafemapdf].
+bindings:
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-artifactregistry.iam.gserviceaccount.com
+  role: roles/artifactregistry.serviceAgent
+- members:
+  - serviceAccount:940153605624@cloudbuild.gserviceaccount.com
+  role: roles/cloudbuild.builds.builder
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/cloudbuild.builds.editor
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-cloudbuild.iam.gserviceaccount.com
+  role: roles/cloudbuild.serviceAgent
+- members:
+  - serviceAccount:service-940153605624@containerregistry.iam.gserviceaccount.com
+  role: roles/containerregistry.ServiceAgent
+- members:
+  - serviceAccount:cognotxt-api@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/datastore.user
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  - serviceAccount:cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.apiUser
+- members:
+  - serviceAccount:api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+  role: roles/documentai.viewer
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-prod-dai-core.iam.gserviceaccount.com
+  role: roles/documentaicore.serviceAgent
+- members:
+  - serviceAccount:940153605624-compute@developer.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+  role: roles/eventarc.eventReceiver
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firebase.iam.gserviceaccount.com
+  role: roles/firebase.managementServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebase.sdkAdminServiceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/firebaseauth.admin
+- members:
+  - serviceAccount:service-940153605624@firebase-rules.iam.gserviceaccount.com
+  role: roles/firebaserules.system
+- members:
+  - serviceAccount:service-940153605624@gcp-sa-firestore.iam.gserviceaccount.com
+  role: roles/firestore.serviceAgent
+- members:
+  - serviceAccount:firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountTokenCreator
+- members:
+  - user:arquitetura.joel@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:service-940153605624@gs-project-accounts.iam.gserviceaccount.com
+  role: roles/pubsub.publisher
+- members:
+  - serviceAccount:cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+  role: roles/run.developer
+- members:
+  - serviceAccount:service-940153605624@serverless-robot-prod.iam.gserviceaccount.com
+  role: roles/run.serviceAgent
+etag: BwZd3lpbrko=
+version: 1
+
+== Eventarc trigger ==
+ERROR: (gcloud.eventarc.triggers.create) FAILED_PRECONDITION: Invalid resource state for "": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.
+- '@type': type.googleapis.com/google.rpc.PreconditionFailure
+  violations:
+  - description: Permission denied while using the Eventarc Service Agent. If you
+      recently started to use Eventarc, it may take a few minutes before all necessary
+      permissions are propagated to the Service Agent. Otherwise, verify that it has
+      Eventarc Service Agent role.
+    type: Eventarc Service Agent
+- '@type': type.googleapis.com/google.rpc.RequestInfo
+  requestId: e68871e39d17d8cc
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$
+
+
+ ==== segue corretiva =====
+
+
+O output do IAM confirma que a etapa anterior de permissões do Cloud Storage foi resolvida e aplicada com sucesso (role: roles/pubsub.publisher adicionada)!
+Agora, o script falhou na última etapa: == Eventarc trigger ==.
+O erro FAILED_PRECONDITION: Permission denied while using the Eventarc Service Agent acontece porque o agente de serviço interno do próprio Eventarc precisa da permissão de Service Agent no nível do projeto para conseguir gerenciar e escutar os gatilhos criados.
+
+🛠️ Como resolver o erro do Eventarc
+
+Assim como fizemos com o Storage, você precisa garantir que a conta de serviço do Eventarc exista e, em seguida, conceder a ela a permissão roles/eventarc.serviceAgent.
+Execute este bloco diretamente no terminal do seu Cloud Shell para corrigir o ambiente:
+bash
+# 1. Garante que o agente de serviço do Eventarc está provisionado no projeto
+gcloud beta services identity create --service=eventarc.googleapis.com --project=grafemapdf
+
+# 2. Concede a permissão oficial de Service Agent para a conta do Eventarc
+gcloud projects add-iam-policy-binding grafemapdf \
+  --member="serviceAccount:service-940153605624@gcp-sa-eventarc.iam.gserviceaccount.com" \
+  --role="roles/eventarc.serviceAgent"
+Use o código com cuidado.
+Nota: O número do seu projeto (940153605624) já foi inserido diretamente no e-mail padrão do agente do Eventarc.
+
+📂 Como ajustar definitivamente no seu script deploy.sh
+
+Para que essa etapa nunca mais quebre em automações futuras, organize a seção == Eventarc trigger == do seu script para que ela fique assim, executando as permissões automáticas antes de tentar criar o gatilho (gcloud eventarc triggers create):
+bash
+# ==========================================
+# == Permissões para o Agente do Eventarc ==
+# ==========================================
+echo "== Configurando Eventarc Service Agent =="
+gcloud beta services identity create --service=eventarc.googleapis.com --project="${PROJECT_ID}"
+
+# Aplica a role necessária para o agente funcionar
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:service-940153605624@gcp-sa-eventarc.iam.gserviceaccount.com" \
+  --role="roles/eventarc.serviceAgent"
+
+# ==========================================
+# == Criação do Eventarc Trigger ==
+# ==========================================
+echo "== Criando o gatilho do Eventarc =="
+# (Aqui segue o seu comando original de gcloud eventarc triggers create ...)
+Use o código com cuidado.
+(Dica: Como a mensagem de erro do Google avisa que a propagação do IAM para o Eventarc pode demorar alguns segundos, se o comando de criação do gatilho falhar logo após aplicar a permissão no script, adicione um comando sleep 10 logo após o add-iam-policy-binding para dar tempo do sistema atualizar).
+Execute os dois comandos de permissão do Eventarc no terminal e rode o deploy novamente. O gatilho (trigger) conseguiu ser criado com sucesso agora?
 
 
 
 
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
+garantir que o Cloud Storage Service Agent exista e tenha roles/pubsub.publisher;
+garantir que o Eventarc Service Agent exista e tenha roles/eventarc.serviceAgent;
+garantir que a service account usada pelo trigger tenha roles/eventarc.eventReceiver;
+garantir roles/run.invoker no cognotxt-dispatcher;
+criar o trigger com tentativas automáticas caso o IAM ainda esteja propagando.
+
+============================================== erro p =============================================================
+
+scripts corrugidos eventarc
 
 
 
+======================================================================================================================================================
+
+arquitetura_joel@cloudshell:~/cognotxt_gcp (grafemapdf)$ ./infra/deploy.sh
+
+======================================================================================================================================================
 
 
+== Eventarc Service Agent ==
+Eventarc Service Agent: service-940153605624@gcp-sa-eventarc.iam.gserviceaccount.com
+PROJECT_ID: 'grafemapdf'
+ERRO: Eventarc Service Agent não foi criado corretamente.
+Conta esperada: 'service-940153605624@gcp-sa-eventarc.iam.gserviceaccount.com'
+Eventarc Service Agent já está corretamente configurado.
+
+== Identidade do Eventarc Trigger ==
+Trigger Service Account: cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+Concedendo Eventarc Event Receiver...
+Eventarc Event Receiver já configurado.
+
+== Permissão Cloud Run Invoker ==
+Concedendo Cloud Run Invoker no dispatcher...
+Cloud Run Invoker já configurado.
+
+== Eventarc trigger ==
+
+Tentativa 1/6 para criar o Eventarc trigger...
+Creating trigger [cognotxt-storage-finalized] in project [grafemapdf], location [us-central1]...done.                                                                                                                                                                                                                            
+WARNING: It may take up to 2 minutes for the new trigger to become active.
+
+Eventarc trigger criado com sucesso.
+
+== Validando Eventarc trigger ==
+Trigger OK: cognotxt-storage-finalized
+
+============================================================
+DEPLOY CONCLUÍDO COM SUCESSO
+===== SOM NA CAIXAAAAAAAAA !!!=======================================================
+===== SOM NA CAIXAAAAAAAAA !!!=======================================================
+===== SOM NA CAIXAAAAAAAAA !!!=======================================================
+============================================================
+API URL: https://cognotxt-api-cb7mg2khjq-uc.a.run.app
+Bucket: gs://grafemapdf-anater-cognotxt
+Eventarc Trigger: cognotxt-storage-finalized
+Região: us-central1
+
+Agora edite frontend/config.js e use:
+apiBaseUrl: "https://cognotxt-api-cb7mg2khjq-uc.a.run.app"
+============================================================
 
 
+funcionou!
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+============================================================
+========================================================================================================================
 
 
 
