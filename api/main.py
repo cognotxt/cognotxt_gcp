@@ -15,6 +15,10 @@ from google.cloud import firestore, storage
 from google.cloud.firestore_v1.base_query import FieldFilter
 from pydantic import BaseModel, Field
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 #PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 PROJECT_ID = os.getenv(
     "GOOGLE_CLOUD_PROJECT",
@@ -69,8 +73,15 @@ if not PROJECT_ID:
         "Não foi possível determinar o Google Cloud Project ID."
     )
 
+#if not firebase_admin._apps:
+#    firebase_admin.initialize_app()
+
 if not firebase_admin._apps:
-    firebase_admin.initialize_app()
+    firebase_admin.initialize_app(
+        options={
+            "projectId": PROJECT_ID
+        }
+    )
 
 storage_client = storage.Client(project=PROJECT_ID)
 firestore_client = firestore.Client(project=PROJECT_ID)
@@ -98,12 +109,69 @@ def safe_filename(name: str) -> str:
     name = re.sub(r"\s+", "_", name).strip("._")
     return name or "arquivo.pdf"
 
+#valida token
+def validar_token(token: str):
+    try:
+        decoded = auth.verify_id_token(
+            token,
+            check_revoked=False
+        )
+
+        logger.info(
+            "Firebase token OK | uid=%s | email=%s | aud=%s | iss=%s",
+            decoded.get("uid"),
+            decoded.get("email"),
+            decoded.get("aud"),
+            decoded.get("iss"),
+        )
+
+        return decoded
+
+    except auth.ExpiredIdTokenError as exc:
+        logger.warning("Firebase token expirado: %s", exc)
+
+        raise HTTPException(
+            status_code=401,
+            detail="Token expirado"
+        )
+
+    except auth.RevokedIdTokenError as exc:
+        logger.warning("Firebase token revogado: %s", exc)
+
+        raise HTTPException(
+            status_code=401,
+            detail="Token revogado"
+        )
+
+    except auth.InvalidIdTokenError as exc:
+        logger.exception(
+            "Firebase InvalidIdTokenError: %s",
+            exc
+        )
+
+        raise HTTPException(
+            status_code=401,
+            detail="Token Firebase inválido"
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "Erro verificando Firebase token: %s: %s",
+            type(exc).__name__,
+            exc,
+        )
+
+        raise HTTPException(
+            status_code=401,
+            detail="Falha na validação do token"
+        )
 
 async def current_user(authorization: str = Header(default="")) -> dict:
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token ausente")
     token = authorization[7:].strip()
     try:
+        validar_token(token)
         decoded = auth.verify_id_token(token, check_revoked=True)
         return decoded
     except Exception as exc:
