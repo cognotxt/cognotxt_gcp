@@ -146,15 +146,21 @@ gcloud run services add-iam-policy-binding cognotxt-dispatcher \
 
 # corrigido sintaxe
 printf '\n== API ==\n'
+
+# API_SA
+#API_SERVICE_ACCOUNT_EMAIL="cognotxt-api@${PROJECT_ID}.iam.gserviceaccount.com"
+
 gcloud run deploy cognotxt-api \
   --image="$API_IMAGE" \
   --region="$REGION" \
+  --project="$PROJECT_ID" \
   --service-account="$API_SA" \
   --allow-unauthenticated \
   --cpu=1 --memory=512Mi \
   --min-instances=0 --max-instances=20 \
-  --set-env-vars="^:@^BUCKET_NAME=$BUCKET_NAME@API_SERVICE_ACCOUNT_EMAIL=$API_SA@ALLOWED_ORIGINS=$FRONTEND_ORIGIN,${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15"
+  --set-env-vars="^:@^BUCKET_NAME=${BUCKET_NAME}@API_SERVICE_ACCOUNT_EMAIL=${API_SA}@ALLOWED_ORIGINS=${FRONTEND_ORIGIN},${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15@GOOGLE_CLOUD_PROJECT=${PROJECT_ID},BUCKET_NAME=${BUCKET_NAME}"
 
+#curl https://cognotxt-api-940153605624.us-central1.run.app/health
 printf '\n== Permissões para Eventarc / Cloud Storage ==\n'
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')"
 

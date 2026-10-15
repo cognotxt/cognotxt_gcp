@@ -105,6 +105,11 @@ No Firebase Console:
 4. Informe o e-mail do cliente/administrador.
 5. Crie uma senha inicial.
 
+
+kanedakodama@gmail.com
+universidade.joel@gmail.com
+Ccriterio_2_5_6_2026!!
+
 Para a primeira versão, recomendo que você mesmo cadastre os usuários. Depois podemos criar uma tela administrativa.
 
 ## 6. Autorizar o domínio
@@ -2852,6 +2857,67 @@ Antes de liberar centenas de arquivos de uma vez, teste aproximadamente:
 10 PDFs
 20 PDFs
 ```
+
+
+======================================================
+arquitetura_joel@cloudshell:~ (grafemapdf)$ gcloud iam service-accounts list
+DISPLAY NAME: firebase-adminsdk
+EMAIL: firebase-adminsdk-fbsvc@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: cognotxt-api
+EMAIL: cognotxt-api@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: cognotxt-dispatcher
+EMAIL: cognotxt-dispatcher@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: api-doc-grafemapdf
+EMAIL: api-doc-grafemapdf@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: cognotxt-eventarc
+EMAIL: cognotxt-eventarc@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: Default compute service account
+EMAIL: 940153605624-compute@developer.gserviceaccount.com
+DISABLED: False
+
+DISPLAY NAME: cognotxt-worker
+EMAIL: cognotxt-worker@grafemapdf.iam.gserviceaccount.com
+DISABLED: False
+arquitetura_joel@cloudshell:~ (grafemapdf)$ gcloud run services update cognotxt-api \
+  --region=us-central1 \
+  --project=grafemapdf \
+  --update-env-vars="API_SERVICE_ACCOUNT_EMAIL=cognotxt-api@grafemapdf.iam.gserviceaccount.com"
+OK Deploying... Done.                                                                                                                                                                                                                                                                                                            
+  OK Creating Revision...                                                                                                                                                                                                                                                                                                        
+  OK Routing traffic...                                                                                                                                                                                                                                                                                                          
+Done.                                                                                                                                                                                                                                                                                                                            
+Service [cognotxt-api] revision [cognotxt-api-00007-2nf] has been deployed and is serving 100 percent of traffic.
+Service URL: https://cognotxt-api-940153605624.us-central1.run.app
+arquitetura_joel@cloudshell:~ (grafemapdf)$ gcloud run services describe cognotxt-api \
+  --region=us-central1 \
+  --project=grafemapdf \
+  --format="yaml(spec.template.spec.containers[0].env)"
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: BUCKET_NAME
+          value: grafemapdf-anater-cognotxt@API_SERVICE_ACCOUNT_EMAIL=cognotxt-api@grafemapdf.iam.gserviceaccount.com@ALLOWED_ORIGINS=https://cognotxt.com.br,https://www.cognotxt.com.br@MAX_FILE_MB=2048@SIGNED_URL_MINUTES=15
+        - name: GOOGLE_CLOUD_PROJECT
+          value: grafemapdf
+        - name: API_SERVICE_ACCOUNT_EMAIL
+          value: cognotxt-api@grafemapdf.iam.gserviceaccount.com
+arquitetura_joel@cloudshell:~ (grafemapdf)$ curl https://cognotxt-api-940153605624.us-central1.run.app/health
+{"ok":true}arquitetura_joel@cloudshell:~ (grafemapdf)$ 
+
+
+==================================
 
 Meça:
 

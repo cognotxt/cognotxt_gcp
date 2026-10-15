@@ -5,6 +5,7 @@ from datetime import timedelta
 from pathlib import PurePosixPath
 
 import firebase_admin
+import google
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import auth
@@ -14,12 +15,59 @@ from google.cloud import firestore, storage
 from google.cloud.firestore_v1.base_query import FieldFilter
 from pydantic import BaseModel, Field
 
-PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
-BUCKET_NAME = os.environ["BUCKET_NAME"]
-API_SERVICE_ACCOUNT_EMAIL = os.environ["API_SERVICE_ACCOUNT_EMAIL"]
+#PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
+PROJECT_ID = os.getenv(
+    "GOOGLE_CLOUD_PROJECT",
+    "grafemapdf"
+)
+
+#BUCKET_NAME = os.environ["BUCKET_NAME"]
+BUCKET_NAME = os.getenv(
+    "BUCKET_NAME"
+)
+#API_SERVICE_ACCOUNT_EMAIL = os.environ["API_SERVICE_ACCOUNT_EMAIL"]
+
+API_SERVICE_ACCOUNT_EMAIL = os.getenv(
+    "API_SERVICE_ACCOUNT_EMAIL"
+)
+
+if not API_SERVICE_ACCOUNT_EMAIL:
+    API_SERVICE_ACCOUNT_EMAIL = (
+        f"cognotxt-api@{PROJECT_ID}.iam.gserviceaccount.com"
+    )
+
+required_config = {
+    "GOOGLE_CLOUD_PROJECT": PROJECT_ID,
+    "BUCKET_NAME": BUCKET_NAME,
+    "API_SERVICE_ACCOUNT_EMAIL": API_SERVICE_ACCOUNT_EMAIL,
+}
+
+missing = [
+    name
+    for name, value in required_config.items()
+    if not value
+]
+
+if missing:
+    raise RuntimeError(
+        "Configuração obrigatória ausente: "
+        + ", ".join(missing)
+    )
+
+
 ALLOWED_ORIGINS = [x.strip() for x in os.getenv("ALLOWED_ORIGINS", "https://cognotxt.com.br,https://www.cognotxt.com.br").split(",") if x.strip()]
 MAX_FILE_MB = int(os.getenv("MAX_FILE_MB", "2048"))
 SIGNED_URL_MINUTES = int(os.getenv("SIGNED_URL_MINUTES", "15"))
+
+# testa se esta vazio
+if not PROJECT_ID:
+    _, detected_project = google.auth.default()
+    PROJECT_ID = detected_project
+
+if not PROJECT_ID:
+    raise RuntimeError(
+        "Não foi possível determinar o Google Cloud Project ID."
+    )
 
 if not firebase_admin._apps:
     firebase_admin.initialize_app()
