@@ -96,6 +96,13 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
+logger.info(
+    "Configuração | project=%s | bucket=%s | api_sa=%s",
+    PROJECT_ID,
+    BUCKET_NAME,
+    API_SERVICE_ACCOUNT_EMAIL,
+)
+
 
 class UploadSessionRequest(BaseModel):
     filename: str = Field(min_length=1, max_length=240)
