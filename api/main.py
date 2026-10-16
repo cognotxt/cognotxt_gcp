@@ -173,12 +173,13 @@ def validar_token(token: str):
             detail="Falha na validação do token"
         )
 
+
 async def current_user(authorization: str = Header(default="")) -> dict:
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token ausente")
     token = authorization[7:].strip()
+    validar_token(token)
     try:
-        validar_token(token)
         decoded = auth.verify_id_token(token, check_revoked=True)
         return decoded
     except Exception as exc:
@@ -206,31 +207,102 @@ def create_upload_session(payload: UploadSessionRequest, request: Request, user=
     job_id = uuid.uuid4().hex
     object_name = f"uploads/{uid}/{job_id}/{filename}"
 
-    job_ref = firestore_client.collection("jobs").document(job_id)
-    job_ref.set({
-        "uid": uid,
-        "filename": filename,
-        "input_object": object_name,
-        "output_object": None,
-        "status": "UPLOADING",
-        "upload_progress": 0,
-        "processing_progress": 0,
-        "processed_pages": 0,
-        "total_pages": None,
-        "error": None,
-        "created_at": firestore.SERVER_TIMESTAMP,
-        "updated_at": firestore.SERVER_TIMESTAMP,
-    })
-
-    blob = bucket.blob(object_name)
-    blob.content_type = "application/pdf"
-    blob.metadata = {"job_id": job_id, "uid": uid, "original_filename": filename}
-    session_url = blob.create_resumable_upload_session(
-        content_type="application/pdf",
-        size=payload.size,
-        origin=origin,
-        if_generation_match=0,
+    logger.info(
+        "Criando upload | uid=%s | job=%s | arquivo=%s | size=%d",
+        uid,
+        job_id,
+        filename,
+        payload.size,
     )
+
+    # ------------------------------------------
+    # Firestore
+    # ------------------------------------------
+
+    try:
+        job_ref = firestore_client.collection("jobs").document(job_id)
+        job_ref.set({
+            "uid": uid,
+            "filename": filename,
+            "input_object": object_name,
+            "output_object": None,
+            "status": "UPLOADING",
+            "upload_progress": 0,
+            "processing_progress": 0,
+            "processed_pages": 0,
+            "total_pages": None,
+            "error": None,
+            "created_at": firestore.SERVER_TIMESTAMP,
+            "updated_at": firestore.SERVER_TIMESTAMP,
+        })
+
+        logger.info(
+            "Firestore OK | job=%s",
+            job_id,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "ERRO FIRESTORE | job=%s | %s",
+            job_id,
+            exc,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Erro ao criar registro do processamento",
+        )
+
+    # ------------------------------------------
+    # Cloud Storage resumable session
+    # ------------------------------------------
+    try:
+        blob = bucket.blob(object_name)
+
+        blob.content_type = "application/pdf"
+
+        blob.metadata = {"job_id": job_id, "uid": uid, "original_filename": filename}
+
+        logger.info(
+            "Criando resumable session | bucket=%s | object=%s",
+            BUCKET_NAME,
+            object_name,
+        )
+
+        session_url = blob.create_resumable_upload_session(
+            content_type="application/pdf",
+            size=payload.size,
+            origin=origin,
+            if_generation_match=0,
+        )
+
+        logger.info(
+            "Resumable session criada | job=%s",
+            job_id,
+        )
+
+    except Exception as exc:
+        logger.exception(
+            "ERRO STORAGE | bucket=%s | object=%s | %s",
+            BUCKET_NAME,
+            object_name,
+            exc,
+        )
+
+        # Atualiza o job para não ficar eternamente UPLOADING.
+        try:
+            job_ref.update({
+                "status": "ERROR",
+                "error": str(exc)[:1000],
+                "updated_at": firestore.SERVER_TIMESTAMP,
+            })
+        except Exception:
+            pass
+
+        raise HTTPException(
+            status_code=500,
+            detail="Erro ao iniciar upload no Cloud Storage",
+        )
 
     return {"job_id": job_id, "session_url": session_url, "object_name": object_name}
 

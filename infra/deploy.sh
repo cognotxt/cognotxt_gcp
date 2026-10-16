@@ -150,6 +150,17 @@ printf '\n== API ==\n'
 # API_SA
 #API_SERVICE_ACCOUNT_EMAIL="cognotxt-api@${PROJECT_ID}.iam.gserviceaccount.com"
 
+# Erro, não usar!
+#gcloud run deploy cognotxt-api \
+#  --image="$API_IMAGE" \
+#  --region="$REGION" \
+#  --project="$PROJECT_ID" \
+#  --service-account="$API_SA" \
+#  --allow-unauthenticated \
+#  --cpu=1 --memory=512Mi \
+#  --min-instances=0 --max-instances=20 \
+#  --set-env-vars="^:@^BUCKET_NAME=${BUCKET_NAME}@API_SERVICE_ACCOUNT_EMAIL=${API_SA}@ALLOWED_ORIGINS=${FRONTEND_ORIGIN},${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15@GOOGLE_CLOUD_PROJECT=${PROJECT_ID},BUCKET_NAME=${BUCKET_NAME}"
+
 gcloud run deploy cognotxt-api \
   --image="$API_IMAGE" \
   --region="$REGION" \
@@ -158,7 +169,28 @@ gcloud run deploy cognotxt-api \
   --allow-unauthenticated \
   --cpu=1 --memory=512Mi \
   --min-instances=0 --max-instances=20 \
-  --set-env-vars="^:@^BUCKET_NAME=${BUCKET_NAME}@API_SERVICE_ACCOUNT_EMAIL=${API_SA}@ALLOWED_ORIGINS=${FRONTEND_ORIGIN},${FRONTEND_ORIGIN_WWW:-}@MAX_FILE_MB=${MAX_FILE_MB:-2048}@SIGNED_URL_MINUTES=15@GOOGLE_CLOUD_PROJECT=${PROJECT_ID},BUCKET_NAME=${BUCKET_NAME}"
+  --env-vars-file=/tmp/cognotxt-api-env.yaml
+
+echo
+echo "== Validando variáveis da API =="
+
+DEPLOYED_BUCKET="$(
+  gcloud run services describe cognotxt-api \
+    --region="$REGION" \
+    --project="$PROJECT_ID" \
+    --format='value(spec.template.spec.containers[0].env[?name="BUCKET_NAME"].value)'
+)"
+
+echo "Bucket esperado : $BUCKET_NAME"
+echo "Bucket configurado: $DEPLOYED_BUCKET"
+
+if [ "$DEPLOYED_BUCKET" != "$BUCKET_NAME" ]; then
+  echo "ERRO: BUCKET_NAME do Cloud Run está incorreto."
+  exit 1
+fi
+
+echo "== FIM da validação de variáveis da API =="
+
 
 #curl https://cognotxt-api-940153605624.us-central1.run.app/health
 printf '\n== Permissões para Eventarc / Cloud Storage ==\n'
