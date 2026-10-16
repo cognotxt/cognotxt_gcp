@@ -130,14 +130,27 @@ gcloud run jobs "$JOB_CMD" cognotxt-worker \
   --set-env-vars="BUCKET_NAME=$BUCKET_NAME,DOCUMENT_AI_LOCATION=$DOCUMENT_AI_LOCATION,GOOGLE_OCR_PROCESSOR_ID=$GOOGLE_OCR_PROCESSOR_ID,GOOGLE_FORM_PROCESSOR_ID=${GOOGLE_FORM_PROCESSOR_ID:-},SMART_TABLE_FORM_PARSER=true,JOB_ID=placeholder,USER_ID=placeholder,INPUT_OBJECT=placeholder,ORIGINAL_FILENAME=placeholder"
 
 printf '\n== Dispatcher ==\n'
+#gcloud run deploy cognotxt-dispatcher \
+#  --image="$DISPATCHER_IMAGE" \
+#  --region="$REGION" \
+#  --service-account="$DISPATCHER_SA" \
+#  --no-allow-unauthenticated \
+#  --cpu=1 --memory=512Mi \
+#  --min-instances=0 --max-instances=10 \
+#  --set-env-vars="CLOUD_RUN_REGION=$REGION,WORKER_JOB_NAME=cognotxt-worker,WORKER_TIMEOUT=21600s"
+
+
 gcloud run deploy cognotxt-dispatcher \
   --image="$DISPATCHER_IMAGE" \
   --region="$REGION" \
+  --project="$PROJECT_ID" \
   --service-account="$DISPATCHER_SA" \
   --no-allow-unauthenticated \
-  --cpu=1 --memory=512Mi \
-  --min-instances=0 --max-instances=10 \
-  --set-env-vars="CLOUD_RUN_REGION=$REGION,WORKER_JOB_NAME=cognotxt-worker,WORKER_TIMEOUT=21600s"
+  --cpu=1 \
+  --memory=512Mi \
+  --min-instances=0 \
+  --max-instances=10 \
+  --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},CLOUD_RUN_REGION=${REGION},WORKER_JOB_NAME=cognotxt-worker,WORKER_TIMEOUT=21600s"
 
 gcloud run services add-iam-policy-binding cognotxt-dispatcher \
   --region="$REGION" \
