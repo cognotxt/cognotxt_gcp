@@ -12,7 +12,18 @@ from google.cloud import documentai_v1 as documentai
 
 logger = logging.getLogger("cognotxt.worker")
 
-PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
+
+if not PROJECT_ID:
+    import google.auth
+
+    _, PROJECT_ID = google.auth.default()
+
+if not PROJECT_ID:
+    raise RuntimeError(
+        "Não foi possível determinar GOOGLE_CLOUD_PROJECT"
+    )
+
 DOCUMENT_AI_LOCATION = os.getenv("DOCUMENT_AI_LOCATION", "us")
 OCR_PROCESSOR_ID = os.environ["GOOGLE_OCR_PROCESSOR_ID"]
 FORM_PROCESSOR_ID = os.getenv("GOOGLE_FORM_PROCESSOR_ID", "").strip()

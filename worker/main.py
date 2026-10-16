@@ -12,7 +12,21 @@ from processor import process_pdf_to_txt
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger("cognotxt.worker")
 
-PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
+#PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
+
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
+
+if not PROJECT_ID:
+    import google.auth
+
+    _, PROJECT_ID = google.auth.default()
+
+if not PROJECT_ID:
+    raise RuntimeError(
+        "Não foi possível determinar GOOGLE_CLOUD_PROJECT"
+    )
+
+
 BUCKET_NAME = os.environ["BUCKET_NAME"]
 JOB_ID = os.environ["JOB_ID"]
 USER_ID = os.environ["USER_ID"]

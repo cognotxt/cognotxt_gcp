@@ -119,15 +119,27 @@ if gcloud run jobs describe cognotxt-worker --region="$REGION" >/dev/null 2>&1; 
 else
   JOB_CMD=create
 fi
+#gcloud run jobs "$JOB_CMD" cognotxt-worker \
+#  --image="$WORKER_IMAGE" \
+#  --region="$REGION" \
+#  --service-account="$WORKER_SA" \
+#  --cpu=4 \
+#  --memory=8Gi \
+#  --task-timeout=21600s \
+#  --max-retries=1 \
+#  --set-env-vars="BUCKET_NAME=$BUCKET_NAME,DOCUMENT_AI_LOCATION=$DOCUMENT_AI_LOCATION,GOOGLE_OCR_PROCESSOR_ID=$GOOGLE_OCR_PROCESSOR_ID,GOOGLE_FORM_PROCESSOR_ID=${GOOGLE_FORM_PROCESSOR_ID:-},SMART_TABLE_FORM_PARSER=true,JOB_ID=placeholder,USER_ID=placeholder,INPUT_OBJECT=placeholder,ORIGINAL_FILENAME=placeholder"
+
 gcloud run jobs "$JOB_CMD" cognotxt-worker \
   --image="$WORKER_IMAGE" \
   --region="$REGION" \
+  --project="$PROJECT_ID" \
   --service-account="$WORKER_SA" \
   --cpu=4 \
   --memory=8Gi \
   --task-timeout=21600s \
   --max-retries=1 \
-  --set-env-vars="BUCKET_NAME=$BUCKET_NAME,DOCUMENT_AI_LOCATION=$DOCUMENT_AI_LOCATION,GOOGLE_OCR_PROCESSOR_ID=$GOOGLE_OCR_PROCESSOR_ID,GOOGLE_FORM_PROCESSOR_ID=${GOOGLE_FORM_PROCESSOR_ID:-},SMART_TABLE_FORM_PARSER=true,JOB_ID=placeholder,USER_ID=placeholder,INPUT_OBJECT=placeholder,ORIGINAL_FILENAME=placeholder"
+  --set-env-vars="GOOGLE_CLOUD_PROJECT=$PROJECT_ID,BUCKET_NAME=$BUCKET_NAME,DOCUMENT_AI_LOCATION=$DOCUMENT_AI_LOCATION,GOOGLE_OCR_PROCESSOR_ID=$GOOGLE_OCR_PROCESSOR_ID,GOOGLE_FORM_PROCESSOR_ID=${GOOGLE_FORM_PROCESSOR_ID:-},SMART_TABLE_FORM_PARSER=true,JOB_ID=placeholder,USER_ID=placeholder,INPUT_OBJECT=placeholder,ORIGINAL_FILENAME=placeholder"
+
 
 printf '\n== Dispatcher ==\n'
 #gcloud run deploy cognotxt-dispatcher \
