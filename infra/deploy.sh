@@ -169,7 +169,7 @@ gcloud run deploy cognotxt-api \
   --allow-unauthenticated \
   --cpu=1 --memory=512Mi \
   --min-instances=0 --max-instances=20 \
-  --env-vars-file=/tmp/cognotxt-api-env.yaml
+  --env-vars-file=/cognotxt-api-env.yaml
 
 echo
 echo "== Validando variáveis da API =="
