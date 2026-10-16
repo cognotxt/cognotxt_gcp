@@ -178,13 +178,7 @@ async def current_user(authorization: str = Header(default="")) -> dict:
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token ausente")
     token = authorization[7:].strip()
-    validar_token(token)
-    try:
-        decoded = auth.verify_id_token(token, check_revoked=True)
-        return decoded
-    except Exception as exc:
-        raise HTTPException(status_code=401, detail="Token inválido") from exc
-
+    return validar_token(token)
 
 @app.get("/health")
 def health():

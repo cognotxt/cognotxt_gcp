@@ -169,16 +169,62 @@ gcloud run deploy cognotxt-api \
   --allow-unauthenticated \
   --cpu=1 --memory=512Mi \
   --min-instances=0 --max-instances=20 \
-  --env-vars-file=/cognotxt-api-env.yaml
+  --update-env-vars "^|^GOOGLE_CLOUD_PROJECT=${PROJECT_ID}|BUCKET_NAME=${BUCKET_NAME}|API_SERVICE_ACCOUNT_EMAIL=${API_SA}|ALLOWED_ORIGINS=${FRONTEND_ORIGIN},${FRONTEND_ORIGIN_WWW}|MAX_FILE_MB=2048|SIGNED_URL_MINUTES=15"
+
+
+#gcloud run deploy cognotxt-api \
+#  --image="$API_IMAGE" \
+#  --region="$REGION" \
+#  --project="$PROJECT_ID" \
+#  --service-account="$API_SA" \
+#  --allow-unauthenticated \
+#  --cpu=1 \
+#  --memory=512Mi \
+#  --min-instances=0 \
+#  --max-instances=20 \
+#  --update-env-vars="^@^GOOGLE_CLOUD_PROJECT=${PROJECT_ID}@BUCKET_NAME=${BUCKET_NAME}@API_SERVICE_ACCOUNT_EMAIL=${API_SA}@ALLOWED_ORIGINS=https://cognotxt.com.br,https://www.cognotxt.com.br@MAX_FILE_MB=2048@SIGNED_URL_MINUTES=15"
 
 echo
 echo "== Validando variáveis da API =="
+
+#DEPLOYED_BUCKET="$(
+#  gcloud run services describe cognotxt-api \
+#    --region="$REGION" \
+#    --project="$PROJECT_ID" \
+#    --format='value(spec.template.spec.containers[0].env[?name="BUCKET_NAME"].value)'
+#)"
 
 DEPLOYED_BUCKET="$(
   gcloud run services describe cognotxt-api \
     --region="$REGION" \
     --project="$PROJECT_ID" \
-    --format='value(spec.template.spec.containers[0].env[?name="BUCKET_NAME"].value)'
+    --format=json |
+  python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+
+envs = (
+    data
+    .get("spec", {})
+    .get("template", {})
+    .get("spec", {})
+    .get("containers", [{}])[0]
+    .get("env", [])
+)
+
+print(
+    next(
+        (
+            item.get("value", "")
+            for item in envs
+            if item.get("name") == "BUCKET_NAME"
+        ),
+        ""
+    )
+)
+'
 )"
 
 echo "Bucket esperado : $BUCKET_NAME"
@@ -186,8 +232,37 @@ echo "Bucket configurado: $DEPLOYED_BUCKET"
 
 if [ "$DEPLOYED_BUCKET" != "$BUCKET_NAME" ]; then
   echo "ERRO: BUCKET_NAME do Cloud Run está incorreto."
+
+  echo
+  echo "Variáveis encontradas no Cloud Run:"
+
+  gcloud run services describe cognotxt-api \
+    --region="$REGION" \
+    --project="$PROJECT_ID" \
+    --format=json |
+  python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+
+envs = (
+    data
+    .get("spec", {})
+    .get("template", {})
+    .get("spec", {})
+    .get("containers", [{}])[0]
+    .get("env", [])
+)
+
+for item in envs:
+    print(f"{item.get(\"name\")}={item.get(\"value\", \"\")}")
+'
+
   exit 1
 fi
+
+echo "BUCKET_NAME OK: $DEPLOYED_BUCKET"
 
 echo "== FIM da validação de variáveis da API =="
 
