@@ -25,7 +25,7 @@ API_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/api:latest"
 DISPATCHER_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/dispatcher:latest"
 WORKER_IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/worker:latest"
 
-
+# versao 1.0.0 20/10/2026
 # Captura o projeto configurado atualmente no seu gcloud shell
 PROJECT_ID=$(gcloud config get-value project)
 # Se PROJECT_ID estiver vazio ou não existir
