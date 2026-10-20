@@ -2,6 +2,9 @@ import os
 import re
 import uuid
 from datetime import timedelta
+from io import BytesIO
+import zipfile
+from fastapi.responses import Response
 from pathlib import PurePosixPath
 
 import firebase_admin
@@ -225,6 +228,7 @@ def create_upload_session(payload: UploadSessionRequest, request: Request, user=
         job_ref.set({
             "uid": uid,
             "filename": filename,
+            "file_size": payload.size,
             "input_object": object_name,
             "output_object": None,
             "status": "UPLOADING",
@@ -347,3 +351,60 @@ def download_url(job_id: str, user=Depends(current_user)):
         response_disposition=f'attachment; filename="{PurePosixPath(job["output_object"]).name}"',
     )
     return {"url": url, "expires_in_minutes": SIGNED_URL_MINUTES}
+
+
+# EVOLUTIVA FRONTEND: prévia limitada ao início do TXT, com validação de proprietário.
+@app.get("/jobs/{job_id}/preview")
+def preview_txt(job_id: str, user=Depends(current_user)):
+    doc = firestore_client.collection("jobs").document(job_id).get()
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+    job = doc.to_dict()
+    if job.get("uid") != user["uid"]:
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    if job.get("status") != "COMPLETED" or not job.get("output_object"):
+        raise HTTPException(status_code=409, detail="TXT ainda não disponível")
+    # Limite de 16 KiB: não baixa um TXT de centenas de páginas para exibir uma prévia.
+    content = bucket.blob(job["output_object"]).download_as_bytes(start=0, end=16383)
+    return {"filename": job.get("filename", ""), "preview": content.decode("utf-8", errors="replace"), "truncated": len(content) >= 16384}
+
+
+# EVOLUTIVA FRONTEND: ZIP em memória limitado, autenticado e restrito aos jobs do usuário.
+# Para volumes maiores, o próximo passo é gerar o ZIP em um Cloud Run Job/GCS.
+class ZipRequest(BaseModel):
+    job_ids: list[str] = Field(min_length=1, max_length=20)
+
+
+@app.post("/jobs/download-zip")
+def download_zip(payload: ZipRequest, user=Depends(current_user)):
+    if len(set(payload.job_ids)) != len(payload.job_ids):
+        raise HTTPException(status_code=400, detail="Seleção contém itens repetidos")
+    entries = []
+    total_bytes = 0
+    for job_id in payload.job_ids:
+        doc = firestore_client.collection("jobs").document(job_id).get()
+        if not doc.exists:
+            raise HTTPException(status_code=404, detail="Um dos arquivos não foi encontrado")
+        item = doc.to_dict()
+        if item.get("uid") != user["uid"]:
+            raise HTTPException(status_code=403, detail="Acesso negado")
+        if item.get("status") != "COMPLETED" or not item.get("output_object"):
+            raise HTTPException(status_code=409, detail="Selecione apenas arquivos concluídos")
+        blob = bucket.blob(item["output_object"])
+        blob.reload()
+        total_bytes += blob.size or 0
+        if total_bytes > 40 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Os TXTs selecionados excedem 40 MB. Baixe individualmente.")
+        entries.append((job_id, blob))
+
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=4) as archive:
+        for job_id, blob in entries:
+            # Nome prefixado por ID para evitar colisões e impedir paths arbitrários no ZIP.
+            filename = PurePosixPath(blob.name).name
+            archive.writestr(f"{job_id[:8]}_{filename}", blob.download_as_bytes())
+    return Response(
+        content=output.getvalue(),
+        media_type="application/zip",
+        headers={"Content-Disposition": 'attachment; filename="cognotxt-resultados.zip"', "Cache-Control": "no-store"},
+    )

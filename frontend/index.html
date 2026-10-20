@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CognoTXT</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
   <header><div class="brand">CognoTXT</div><button id="logoutBtn" class="ghost hidden">Sair</button></header>
@@ -30,14 +30,32 @@
         </div>
       </div>
 
+      <!-- EVOLUTIVA FRONTEND: resumo e ferramentas para localizar/agir sobre vários PDFs. -->
+      <div class="stats-row" aria-live="polite">
+        <div class="stat"><span>Arquivos</span><strong id="statTotal">0</strong></div>
+        <div class="stat"><span>Processando</span><strong id="statProcessing">0</strong></div>
+        <div class="stat"><span>Concluídos</span><strong id="statCompleted">0</strong></div>
+        <div class="stat"><span>Com erro</span><strong id="statErrors">0</strong></div>
+      </div>
+      <div class="toolbar">
+        <label class="search-label">Buscar arquivo <input id="searchInput" type="search" placeholder="Nome do PDF…"></label>
+        <label class="filter-label">Status <select id="statusFilter"><option value="ALL">Todos</option><option value="ACTIVE">Em andamento</option><option value="COMPLETED">Prontos</option><option value="ERROR">Erros</option></select></label>
+        <button id="zipBtn" type="button" class="secondary" disabled>Baixar selecionados (.zip)</button>
+        <button id="clearBtn" type="button" class="secondary">Ocultar concluídos</button>
+      </div>
+      <p id="tableFeedback" class="hint" role="status"></p>
       <div class="card table-wrap">
         <table>
-          <thead><tr><th>Arquivo</th><th>Upload</th><th>Processamento</th><th>Status</th><th>Download</th></tr></thead>
+          <thead><tr><th><input id="selectAll" type="checkbox" aria-label="Selecionar arquivos prontos visíveis"></th><th>Arquivo</th><th>Upload</th><th>Processamento</th><th>Status</th><th>Download / ações</th></tr></thead>
           <tbody id="jobsBody"></tbody>
         </table>
       </div>
+      <dialog id="previewDialog" class="preview-dialog" aria-labelledby="previewTitle">
+        <div class="preview-header"><h2 id="previewTitle">Prévia do TXT</h2><button id="closePreviewBtn" class="secondary" type="button">Fechar</button></div>
+        <p id="previewHint" class="hint"></p><pre id="previewContent"></pre>
+      </dialog>
     </section>
   </main>
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=2"></script>
 </body>
 </html>
