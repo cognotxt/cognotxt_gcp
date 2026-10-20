@@ -408,3 +408,37 @@ def download_zip(payload: ZipRequest, user=Depends(current_user)):
         media_type="application/zip",
         headers={"Content-Disposition": 'attachment; filename="cognotxt-resultados.zip"', "Cache-Control": "no-store"},
     )
+
+
+# EVOLUTIVA API B2B: inclusão independente, sem modificar o login e rotas legadas.
+# São usados os mesmos Firestore, GCS e URLs assinadas já operacionais.
+from b2b import router as b2b_router, configure as configure_b2b
+
+
+def b2b_create_session(object_name, size, job_id, uid):
+    blob = bucket.blob(object_name)
+    blob.content_type = "application/pdf"
+    blob.metadata = {"job_id": job_id, "uid": uid}
+    # Backend-to-backend: não há cabeçalho Origin nem CORS no cliente.
+    return blob.create_resumable_upload_session(
+        content_type="application/pdf", size=size, if_generation_match=0
+    )
+
+
+def b2b_download_url(object_name):
+    blob = bucket.blob(object_name)
+    creds, _ = google_auth_default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    creds.refresh(GoogleAuthRequest())
+    url = blob.generate_signed_url(
+        version="v4", expiration=timedelta(minutes=SIGNED_URL_MINUTES),
+        method="GET", service_account_email=API_SERVICE_ACCOUNT_EMAIL,
+        access_token=creds.token,
+        response_disposition=f'attachment; filename="{PurePosixPath(object_name).name}"',
+    )
+    return {"url": url, "expires_in_minutes": SIGNED_URL_MINUTES}
+
+
+configure_b2b(database=firestore_client, storage_bucket=bucket,
+              make_session=b2b_create_session, make_signed_url=b2b_download_url,
+              firebase_dependency=validar_token, maximum_bytes=MAX_FILE_MB * 1024 * 1024)
+app.include_router(b2b_router)

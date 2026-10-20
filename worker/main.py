@@ -55,6 +55,47 @@ def update_progress(done, total):
     }, merge=True)
 
 
+
+# EVOLUTIVA API B2B: finalização idempotente da contagem de jobs e consumo por chave.
+# O frontend Firebase mantém comportamento original; apenas jobs com channel=B2B contabilizam.
+@firestore.transactional
+def account_job(tx, key_ref, job_doc_ref, success, pages, elapsed):
+    snap = job_doc_ref.get(transaction=tx)
+    if not snap.exists:
+        return
+    item = snap.to_dict()
+    if item.get("channel") != "B2B" or item.get("quota_released"):
+        return
+    key = key_ref.get(transaction=tx)
+    if not key.exists:
+        logger.warning("API Key removida durante processamento: %s", key_ref.id)
+        return
+    data = key.to_dict()
+    month = datetime.now(timezone.utc).strftime("%Y%m")
+    monthly = data.get("usage_month") == month
+    tx.update(job_doc_ref, {"quota_released": True})
+    tx.update(key_ref, {
+        "active_count": firestore.Increment(-1),
+        "pages_total": firestore.Increment(int(pages)),
+        "errors_total": firestore.Increment(0 if success else 1),
+        "processing_seconds_total": firestore.Increment(int(elapsed)),
+        "usage_month": month,
+        "pages_month": (int(data.get("pages_month", 0)) if monthly else 0) + int(pages),
+    })
+
+
+def finalize_b2b(success):
+    doc = job_ref.get()
+    if not doc.exists:
+        return
+    item = doc.to_dict()
+    if item.get("channel") != "B2B" or not item.get("api_key_id"):
+        return
+    start = item.get("started_at")
+    elapsed = max(0, (datetime.now(timezone.utc) - start).total_seconds()) if start else 0
+    account_job(db.transaction(), db.collection("b2b_api_keys").document(item["api_key_id"]),
+                job_ref, success, item.get("processed_pages") or 0, elapsed)
+
 def main():
     workdir = Path("/tmp/cognotxt")
     workdir.mkdir(parents=True, exist_ok=True)
@@ -88,6 +129,11 @@ def main():
             "finished_at": firestore.SERVER_TIMESTAMP,
             "updated_at": firestore.SERVER_TIMESTAMP,
         }, merge=True)
+        # A contabilização não deve invalidar um OCR concluído e salvo com êxito.
+        try:
+            finalize_b2b(True)
+        except Exception:
+            logger.exception("OCR concluído, mas falhou contabilização B2B; requer reconciliação")
         logger.info("Concluído: %s", output_object)
     except Exception as exc:
         logger.exception("Falha no processamento")
@@ -97,6 +143,10 @@ def main():
             "finished_at": firestore.SERVER_TIMESTAMP,
             "updated_at": firestore.SERVER_TIMESTAMP,
         }, merge=True)
+        try:
+            finalize_b2b(False)
+        except Exception:
+            logger.exception("Não foi possível registrar faturamento/concorrência B2B")
         raise
 
 
